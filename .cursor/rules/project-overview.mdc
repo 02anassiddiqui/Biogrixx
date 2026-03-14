@@ -1,0 +1,57 @@
+---
+description: Biogrix project overview, architecture, and JavaScript-only monorepo structure
+globs: **/*
+alwaysApply: true
+---
+
+# Biogrix Project Overview
+
+## What is Biogrix
+
+Biogrix is a **Biogas Utility Management Platform** that manages:
+
+- Biogas plants
+- Gas distribution networks
+- Households / customers
+- Gas meters
+- Gas usage tracking
+- Billing
+- Payments
+- Maintenance
+
+## Tech Stack
+
+- **Frontend**: Next.js, JavaScript, TailwindCSS
+- **Backend**: Node.js, Express, JavaScript
+- **Database**: PostgreSQL
+- **Authentication**: JWT
+
+## Critical Rule: JavaScript Only
+
+The entire project uses **JavaScript only**. Do NOT generate TypeScript. No `.ts` or `.tsx` files. Use `.js` and `.jsx` exclusively.
+
+## System Architecture
+
+### Repository Structure (Split Monorepo)
+
+```
+/frontend          # All frontend applications and shared code
+/backend           # All backend services and shared code
+/infrastructure    # IaC, deployment configs
+/docs              # Project documentation
+```
+
+### Deployable Units
+
+- `frontend/apps/web` → Public website
+- `frontend/apps/admin` → Admin dashboard
+- `backend/api` → REST API server
+- `backend/worker` → Background jobs
+
+### Separation Rules
+
+- Frontend must NOT import from backend
+- Backend must NOT import from frontend
+- Shared frontend code: `frontend/shared/ui`, `frontend/shared/utils`
+- Shared backend code: `backend/shared/database`, `backend/shared/utils`
+- No duplication of shared logic across boundaries

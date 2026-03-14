@@ -1,0 +1,68 @@
+---
+description: Enforces strict architectural boundaries between frontend and backend code.
+globs: **/*
+alwaysApply: true
+---
+
+# Biogrix Module Boundaries
+
+## Separation Rules
+
+- **Frontend code must NOT import anything from backend**
+- **Backend code must NOT import anything from frontend**
+- Shared utilities must live only in shared folders
+
+## Shared Code Locations
+
+- **Frontend shared code** → `frontend/shared/`
+- **Backend shared code** → `backend/shared/`
+
+## Backend Boundaries
+
+- **API logic** must only exist inside `backend/api/`
+- **Database access** must only exist inside `backend/shared/database/`
+- **Business logic** must never be placed inside frontend components
+
+## Examples
+
+### Incorrect imports
+
+```javascript
+// ❌ Frontend importing from backend
+import { getCustomer } from '../../backend/api/modules/customers/customers.service';
+```
+
+```javascript
+// ❌ Backend importing from frontend
+import { Button } from '../../frontend/shared/ui/Button';
+```
+
+```javascript
+// ❌ API importing database client from outside shared
+const db = require('../../worker/db');
+```
+
+### Correct imports
+
+```javascript
+// ✅ Frontend importing from frontend shared
+import { Button } from '@/shared/ui/Button';
+import { formatDate } from '@/shared/utils/date';
+```
+
+```javascript
+// ✅ Backend API importing from backend shared
+const db = require('../../shared/database/client');
+const { validateEmail } = require('../../shared/utils/validation');
+```
+
+```javascript
+// ✅ API module importing database from shared
+const db = require('../../../shared/database/client');
+```
+
+
+Backend modules must not directly access the database client.
+
+Database queries must go through a repository or data layer
+inside backend/shared/database or inside the module repository.

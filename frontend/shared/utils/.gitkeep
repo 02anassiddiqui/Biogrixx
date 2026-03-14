@@ -1,0 +1,11 @@
+frontend/shared/ui/.gitkeep          # Keeps this directory in Git
+frontend/shared/utils/.gitkeep      # Keeps this directory in Git
+backend/api/src/routes/.gitkeep     # Keeps this directory in Git
+backend/api/src/middleware/.gitkeep # Keeps this directory in Git
+backend/api/src/config/.gitkeep     # Keeps this directory in Git
+backend/shared/utils/.gitkeep       # Keeps this directory in Git
+backend/worker/jobs/.gitkeep        # Keeps this directory in Git
+backend/worker/scheduler/.gitkeep   # Keeps this directory in Git
+infrastructure/docker/.gitkeep      # Keeps this directory in Git
+infrastructure/scripts/.gitkeep     # Keeps this directory in Git
+infrastructure/env/.gitkeep         # Keeps this directory in Git

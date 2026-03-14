@@ -1,0 +1,129 @@
+# Biogrix Project Rules
+
+You are working on **Biogrix**, a Biogas Utility Management Platform. Follow these rules strictly.
+
+---
+
+## Language & Stack
+
+- **JavaScript only.** Do NOT use TypeScript anywhere. No `.ts`, `.tsx` files.
+- **Frontend**: Next.js, JavaScript, TailwindCSS, Functional React components.
+- **Backend**: Node.js, Express.js, JavaScript.
+- **Database**: PostgreSQL.
+- **Auth**: JWT.
+
+---
+
+## Repository Structure
+
+### Root
+```
+/frontend
+/backend
+/infrastructure
+/docs
+```
+
+### Frontend
+```
+frontend/
+  apps/web       -> Public website (Next.js)
+  apps/admin     -> Admin dashboard (Next.js)
+  shared/ui      -> Reusable UI components
+  shared/utils   -> Frontend utilities
+```
+
+### Backend
+```
+backend/
+  api            -> REST API server
+    modules/     -> Feature-based: customers, plants, gas-usage, billing, payments, complaints, maintenance, reports
+  worker         -> Background jobs
+  shared/database
+  shared/utils
+```
+
+- Frontend must NOT import from backend.
+- Backend must NOT import from frontend.
+- Shared logic: use `frontend/shared` and `backend/shared` respectively.
+- No duplication of shared logic across frontend and backend.
+
+---
+
+## Modular Architecture
+
+- Backend API uses **feature-based modules**. Each module (customers, plants, gas-usage, billing, payments, complaints, maintenance, reports) owns its routes, handlers, and logic.
+- Modules must not import from other modules directly.
+- Use `backend/shared/database` and `backend/shared/utils` for shared code.
+
+---
+
+## Reusable Components
+
+- Reusable UI components belong in `frontend/shared/ui`.
+- Do not place shared components inside individual apps. Apps import from `shared/ui`.
+- Shared code in `shared/` must not depend on app-specific code.
+
+---
+
+## API Response Format
+
+All API responses must follow:
+
+**Success:**
+```json
+{
+  "success": true,
+  "data": { ... },
+  "message": ""
+}
+```
+
+**Error:**
+```json
+{
+  "success": false,
+  "data": null,
+  "message": "Human-readable error",
+  "errors": [...],
+  "code": "ERROR_CODE"
+}
+```
+
+---
+
+## Code Quality
+
+- Prefer clean, readable code over clever shortcuts.
+- Follow modular design; keep functions small and focused.
+- Avoid unnecessary dependencies.
+- Write clear comments where logic is non-obvious.
+- Keep functions small and focused.
+
+---
+
+## Separation of Concerns
+
+- Clear separation between frontend and backend.
+- UI logic in frontend; business logic in backend.
+- Database access only in backend via `backend/shared/database`.
+
+---
+
+## Deployment
+
+- `frontend/apps/web`, `frontend/apps/admin`, `backend/api`, and `backend/worker` are independently deployable.
+- Each unit must be buildable and runnable on its own.
+
+---
+
+## Documentation
+
+Refer to `/docs` for full standards:
+- `docs/architecture/repository-architecture.md`
+- `docs/architecture/system-architecture.md`
+- `docs/product/product-overview.md`
+- `docs/product/modules.md`
+- `docs/api/api-standards.md`
+- `docs/database/database-design.md`
+- `docs/engineering/development-rules.md`

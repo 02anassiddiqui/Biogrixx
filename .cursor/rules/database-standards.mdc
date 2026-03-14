@@ -1,0 +1,35 @@
+---
+description: PostgreSQL database naming and schema conventions
+globs: backend/shared/database/**/*
+alwaysApply: false
+---
+
+# Biogrix Database Standards
+
+## Engine
+
+- **PostgreSQL** only
+
+## Naming Conventions
+
+- **snake_case** for all table and column names
+- **Plural table names**: `customers`, `bills`, `maintenance_issues`
+
+## Required Columns
+
+Every table MUST include:
+
+- `id` — Primary key (UUID or SERIAL/BIGSERIAL)
+- `created_at` — Timestamp (UTC), set on insert
+- `updated_at` — Timestamp (UTC), updated on change
+
+## Column Naming
+
+- snake_case: `customer_id`, `full_name`, `is_active`
+- Foreign keys: `{referenced_table_singular}_id` (e.g., `customer_id`, `plant_id`)
+
+## Indexes
+
+- Index foreign key columns used in joins
+- Index columns frequently used in WHERE, ORDER BY
+- Use meaningful index names: `ix_{table}_{columns}`

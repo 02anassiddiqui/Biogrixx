@@ -1,0 +1,70 @@
+---
+description: REST API design standards and response format
+globs: backend/api/**/*
+alwaysApply: false
+---
+
+# Biogrix API Standards
+
+## Response Structure
+
+All API responses MUST follow this format:
+
+### Success
+
+```json
+{
+  "success": true,
+  "data": {},
+  "message": ""
+}
+```
+
+- `success`: Always `true`
+- `data`: Response payload (object or array)
+- `message`: Optional human-readable message
+
+### Paginated List
+
+```json
+{
+  "success": true,
+  "data": [],
+  "message": "",
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 150,
+    "totalPages": 8
+  }
+}
+```
+
+### Error
+
+```json
+{
+  "success": false,
+  "data": null,
+  "message": "Human-readable error message",
+  "errors": [],
+  "code": "ERROR_CODE"
+}
+```
+
+## REST Conventions
+
+- Use **plural nouns** for resources: `/customers`, `/bills`
+- Use **kebab-case** for multi-word paths: `/maintenance-issues`
+- Use appropriate HTTP methods: GET, POST, PUT, PATCH, DELETE
+
+## Authentication
+
+- Use **JWT** for authentication
+- Require `Authorization: Bearer <token>` header for protected routes
+- Validate JWT on protected endpoints before handler execution
+
+## Pagination
+
+- Query params: `page` (1-based), `limit` (default 20, max 100)
+- Include `pagination` object in response when listing collections

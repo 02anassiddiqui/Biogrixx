@@ -1,0 +1,39 @@
+---
+description: Frontend rules for Next.js apps and shared UI components
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Biogrix Frontend Rules
+
+## Structure
+
+- `frontend/apps/web` → Public website (Next.js)
+- `frontend/apps/admin` → Admin dashboard (Next.js)
+- `frontend/shared/ui` → Reusable UI components
+- `frontend/shared/utils` → Frontend utilities
+
+## Component Rules
+
+- Use **functional React components** only (no class components)
+- Extract reusable components into `frontend/shared/ui`
+- Apps import shared components from `shared/ui`; do not duplicate
+- Keep components focused; split large components into smaller ones
+
+## Next.js Conventions
+
+- Follow Next.js App Router or Pages Router conventions as configured
+- Use file-based routing (pages or app directory)
+- Prefer server components where appropriate; use client components when interactivity is needed
+
+## Styling
+
+- Use **TailwindCSS** for all styling
+- Avoid inline styles; use Tailwind utility classes
+- Prefer Tailwind over custom CSS; add custom styles only when Tailwind cannot handle the case
+
+## Clean Component Structure
+
+- One component per file when possible
+- Co-locate component-specific styles or utilities
+- Use descriptive component and file names (PascalCase for components)

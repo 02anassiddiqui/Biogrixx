@@ -1,0 +1,9 @@
+{
+  "name": "@biogrix/worker",
+  "version": "0.1.0",
+  "private": true,
+  "main": "worker.js",
+  "scripts": {
+    "start": "node worker.js"
+  }
+}

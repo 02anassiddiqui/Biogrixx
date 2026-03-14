@@ -1,0 +1,35 @@
+---
+description: General JavaScript coding style and best practices
+globs: **/*.js, **/*.jsx
+alwaysApply: false
+---
+
+# Biogrix Coding Style
+
+## Language
+
+- **JavaScript only**. No TypeScript. No `.ts` or `.tsx` files.
+
+## Functions
+
+- Keep functions **small and focused** (ideally under 30 lines)
+- One clear responsibility per function
+- Prefer pure functions when possible
+
+## Readability
+
+- Write **clean, readable code** over clever or terse solutions
+- Use descriptive variable and function names
+- Avoid abbreviations unless widely understood
+
+## Logic Structure
+
+- **Avoid deeply nested logic** (max 2-3 levels when possible)
+- Extract nested blocks into named functions
+- Use early returns to reduce nesting
+
+## Comments
+
+- Add **helpful comments** for non-obvious logic
+- Document "why" not "what" when the code is self-explanatory
+- Keep comments up to date with code changes

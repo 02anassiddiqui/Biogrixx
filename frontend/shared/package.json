@@ -1,0 +1,9 @@
+{
+  "name": "@biogrix/shared-ui",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./ui/index.js",
+  "exports": {
+    ".": "./ui/index.js"
+  }
+}

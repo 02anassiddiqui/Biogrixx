@@ -1,0 +1,65 @@
+---
+description: Enforces feature-based modular architecture in the backend.
+globs: backend/api/**/*
+alwaysApply: false
+---
+
+# Biogrix Feature Modules
+
+## Structure
+
+Backend API must be organized by **feature modules**. Each module is self-contained.
+
+## Module Structure
+
+Each module must contain:
+
+- `controller` — HTTP request handling
+- `service` — Business logic
+- `routes` — Endpoint mappings
+- `validation` — Input validation (optional)
+- `repository` or data layer — Data access (optional)
+
+## Example Modules
+
+- customers
+- plants
+- gas-usage
+- billing
+- payments
+- complaints
+- maintenance
+- reports
+
+## Folder Structure Example
+
+```
+backend/api/
+└── src/
+    └── modules/
+        ├── customers/
+        │   ├── customers.controller.js
+        │   ├── customers.service.js
+        │   └── customers.routes.js
+        ├── plants/
+        │   ├── plants.controller.js
+        │   ├── plants.service.js
+        │   └── plants.routes.js
+        └── billing/
+            ├── billing.controller.js
+            ├── billing.service.js
+            └── billing.routes.js
+```
+
+## Layer Responsibilities
+
+- **Controllers** — Handle HTTP requests and responses; parse input; call services
+- **Services** — Contain all business logic; call database/repository
+- **Routes** — Map endpoints to controller methods only
+
+## Rules
+
+- Controllers must remain **thin** (no business logic)
+- Business logic must live in **services**
+- Controllers call services; services perform operations
+- Each module must not import from other modules directly; use shared code when cross-module logic is needed

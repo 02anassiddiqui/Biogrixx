@@ -1,0 +1,42 @@
+---
+description: Backend rules for Express API and worker services
+globs: backend/**/*
+alwaysApply: false
+---
+
+# Biogrix Backend Rules
+
+## Structure
+
+- `backend/api` → REST API server (Express)
+- `backend/worker` → Background jobs
+- `backend/shared/database` → Database client, schema, migrations
+- `backend/shared/utils` → Backend utilities
+
+## Architecture
+
+- **Node.js + Express** for the API server
+- **Modular folder structure**: feature-based modules within `backend/api/modules`
+- **Service layer separation**: handlers call services; services contain business logic
+- **Controller-based routing**: routes map to handlers; handlers are thin controllers
+
+## Module Organization
+
+Each feature module (customers, plants, gas-usage, billing, payments, complaints, maintenance, reports) should have:
+
+- Routes (endpoint definitions)
+- Handlers (request/response handling)
+- Service layer (business logic, optional)
+
+## Error Handling
+
+- Use consistent error handling middleware
+- Never expose stack traces in production responses
+- Use custom error classes or codes for different error types
+- Log errors server-side with sufficient context
+
+## Database Access
+
+- All database access goes through `backend/shared/database`
+- No raw SQL in handlers; use database client or repository layer
+- Use parameterized queries to prevent SQL injection
