@@ -7,10 +7,16 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function App({ Component, pageProps }) {
   return (
-    <div className={inter.className}>
-      <MainLayout>
-        <Component {...pageProps} />
-      </MainLayout>
-    </div>
+    <>
+      <Head>
+        <link rel="icon" href="/favicon.svg" />
+      </Head>
+
+      <div className={inter.className}>
+        <MainLayout>
+          <Component {...pageProps} />
+        </MainLayout>
+      </div>
+    </>
   )
 }
