@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import { Inter } from 'next/font/google'
 import MainLayout from '../layouts/MainLayout'
 import '../styles/globals.css'
