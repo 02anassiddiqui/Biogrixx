@@ -7,7 +7,7 @@
  * Customers repository.
  * Handles all database operations for the leads/customers table.
  */
-const { supabase } = require("../../database/supabaseClient");
+const { supabase } = require("../../shared/database/supabaseClient");
 
 /**
  * Saari leads fetch karne ke liye (Admin Dashboard ke liye)

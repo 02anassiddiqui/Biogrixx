@@ -21,7 +21,7 @@
  */
 const customersService = require("./customers.service");
 // Note: Path check kar lena aapke shared folder ke hisaab se
-const { sendSuccess, sendError } = require("../../../shared/utils/apiResponse");
+const { sendSuccess, sendError } = require("../../shared/utils/apiResponse");
 
 /**
  * Jab kisan form submit karega

@@ -3,7 +3,7 @@
  * TODO: Implement request handlers.
  */
 
-const { success } = require('../../../../shared/utils/apiResponse')
+const { success } = require('../../shared/utils/apiResponse')
 const billingService = require('./billing.service')
 
 exports.list = async (req, res) => {
