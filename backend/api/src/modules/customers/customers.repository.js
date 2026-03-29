@@ -7,7 +7,7 @@
  * Customers repository.
  * Handles all database operations for the leads/customers table.
  */
-const { supabase } = require("../../../../shared/database/supabaseClient");
+const { supabase } = require("../../database/supabaseClient");
 
 /**
  * Saari leads fetch karne ke liye (Admin Dashboard ke liye)
@@ -52,10 +52,7 @@ exports.create = async (leadData) => {
 };
 
 exports.remove = async (id) => {
-  const { error } = await supabase
-    .from('leads')
-    .delete()
-    .eq('id', id);
+  const { error } = await supabase.from("leads").delete().eq("id", id);
 
   if (error) {
     console.error("❌ Repository Error (Delete):", error.message);

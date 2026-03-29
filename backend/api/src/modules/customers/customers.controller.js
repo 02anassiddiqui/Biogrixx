@@ -19,9 +19,9 @@
  * Customers controller.
  * Handles incoming HTTP requests and sends responses.
  */
-const customersService = require('./customers.service');
+const customersService = require("./customers.service");
 // Note: Path check kar lena aapke shared folder ke hisaab se
-const { sendSuccess, sendError } = require('../../../../shared/utils/apiResponse');
+const { sendSuccess, sendError } = require("../../../shared/utils/apiResponse");
 
 /**
  * Jab kisan form submit karega
@@ -33,14 +33,14 @@ exports.createCustomer = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "Farmer lead registered successfully",
-      data: lead
+      data: lead,
     });
   } catch (error) {
     console.error("❌ Controller Error:", error.message);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -53,13 +53,13 @@ exports.getCustomers = async (req, res) => {
     const leads = await customersService.getAllLeads();
     return res.status(200).json({
       success: true,
-      data: leads
+      data: leads,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Error fetching leads",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -70,17 +70,17 @@ exports.deleteCustomer = async (req, res) => {
   try {
     const { id } = req.params; // URL se ID nikalne ke liye
     await customersService.deleteCustomer(id);
-    
+
     return res.status(200).json({
       success: true,
-      message: "Lead deleted successfully"
+      message: "Lead deleted successfully",
     });
   } catch (error) {
     console.error("❌ Controller Error (Delete):", error.message);
     return res.status(500).json({
       success: false,
       message: "Error deleting lead",
-      error: error.message
+      error: error.message,
     });
   }
 };
