@@ -1,20 +1,18 @@
-/**
- * Supabase client for Biogrix.
- * Requires SUPABASE_URL and SUPABASE_ANON_KEY from environment.
- */
+const { createClient } = require('@supabase/supabase-js');
 
-const { createClient } = require('@supabase/supabase-js')
+// Ab humein yahan dotenv ki zaroorat nahi hai, 
+// kyunki server.js ise pehle hi load kar chuka hoga.
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'SUPABASE_URL and SUPABASE_ANON_KEY must be set. ' +
-    'Check your .env file or environment configuration.'
-  )
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error("❌ Error: Supabase URL ya Key missing hai! Check .env file.");
 }
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
+const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    persistSession: false
+  }
+});
 
-module.exports = { supabase }
+module.exports = { supabase };

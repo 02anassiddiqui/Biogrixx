@@ -1,5 +1,3 @@
-
-
 import Link from 'next/link'
 import { Factory, Mail, Globe, ShieldCheck, Twitter, Linkedin, Github } from 'lucide-react'
 
