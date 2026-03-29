@@ -4,6 +4,7 @@ import { Container } from "../components/ui/Container";
 import { Section } from "../components/ui/Section";
 import { Button } from "../components/ui/Button";
 import { useState } from "react";
+import { apiRequest } from "../../admin/services/api";
 // import { supabase } from "../../../shared/lib/supabaseClient";
 import {
   Mail,
@@ -50,13 +51,15 @@ export default function Contact() {
     setLoading(true);
 
     try {
-      // 🚀 Professional API Call
-      const response = await fetch("http://localhost:4000/v1/customers/register", {
+      // 🚀 CHANGE 1: Localhost URL hata kar Environment Variable wala logic lagaya
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/v1";
+      
+      const response = await fetch(`${API_BASE_URL}/customers/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData), // Hamara data yahan ja raha hai
+        body: JSON.stringify(formData),
       });
 
       const result = await response.json();
@@ -64,7 +67,7 @@ export default function Contact() {
       if (response.ok && result.success) {
         alert("Badhiya! Aapki enquiry Professional Backend ke zariye save ho gayi hai.");
         
-        // Form khali karne ke liye
+        // Form reset logic
         setFormData({
           name: "",
           phone: "",
@@ -75,7 +78,6 @@ export default function Contact() {
           message: "",
         });
       } else {
-        // Agar backend error de (jaise validation error)
         throw new Error(result.message || "Kuch galti hui hai!");
       }
     } catch (error) {
