@@ -94,7 +94,7 @@ export default function About() {
           </div>
           <div className="order-1 lg:order-2 bg-neutral-100 rounded-3xl aspect-square flex items-center justify-center border border-neutral-200 text-neutral-300">
             {/* <Network size={120} /> */}
-            <img src="images/image_2.jpeg" alt="" className='w-full h-full object-cover object-center rounded-3xl'/>
+            <img src="/images/image_2.jpeg" alt="" className='w-full h-full object-cover object-center rounded-3xl'/>
           </div>
         </Container>
       </Section>
