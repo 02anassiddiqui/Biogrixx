@@ -29,35 +29,35 @@ export default function HowItWorks() {
       title: "Waste Collection",
       subtitle: "Step 01: Waste Collection",
       text: "Daily cow dung and organic waste are collected from farms or households. This is not waste, but valuable raw material for clean energy production.",
-      img: "images/image_7.jpeg",
+      img: "/images/image_7.jpeg",
       icon: Trash2,
     },
     {
       title: "Biogas Production",
       subtitle: "Step 02: Gas Production",
       text: "Dung is mixed with water and fed into an underground digester where anaerobic bacteria produce methane-rich biogas.",
-      img: "images/image_5.jpeg",
+      img: "/images/image_5.jpeg",
       icon: Zap,
     },
     {
       title: "Storage & Processing",
       subtitle: "Step 03: Storage",
       text: "The gas is stored in a dome structure where pressure is maintained to ensure continuous supply.",
-      img: "images/image_3.jpeg",
+      img: "/images/image_3.jpeg",
       icon: Database,
     },
     {
       title: "Gas Distribution",
       subtitle: "Step 04: Distribution",
       text: "Biogas is distributed through pipelines to connected households, creating a local energy grid..",
-      img: "images/image_2.jpeg",
+      img: "/images/image_2.jpeg",
       icon: Truck,
     },
     {
       title: "Monitoring & Billing",
       subtitle: "Step 05: Monitoring & Billing",
       text: "Gas meters track usage. The system monitors consumption and generates automated monthly billing.",
-      img: "images/image_1.jpeg",
+      img: "/images/image_1.jpeg",
       icon: Gauge,
     },
   ];
@@ -148,7 +148,7 @@ export default function HowItWorks() {
 
                   <p className="text-emerald-50/80 text-lg leading-relaxed">
                     {step.text}
-                  </p>     
+                  </p>
 
                   <div className="flex items-center gap-2 text-white/50 font-black text-[10px] uppercase tracking-widest">
                     <CheckCircle2 size={14} className="text-emerald-300" />{" "}
