@@ -5,7 +5,7 @@ export function Card({ children, className = '', hover = false }) {
     
   return (
     <div
-      className={`bg-white rounded-2xl border border-neutral-100 p-8 shadow-sm ${hoverClass} ${className}`}
+      className={`rounded-2xl border border-neutral-100 p-8 shadow-sm ${hoverClass} ${className}`}
     >
       {children}
     </div>

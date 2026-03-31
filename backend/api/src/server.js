@@ -41,9 +41,9 @@ app.use(express.json());
 app.use(requestLogger);
 
 // 2. Base Health Check (Test karne ke liye)
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'Biogrix API is alive' });
-});
+// app.get('/health', (req, res) => {
+//   res.status(200).json({ status: 'OK', message: 'Biogrix API is alive' });
+// });
 
 // 3. HEALTH CHECK (For Render & UptimeRobot)
 app.get('/health', (req, res) => {
