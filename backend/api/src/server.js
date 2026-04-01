@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 4000;
 const allowedOrigins = [
   'https://biogrix.vercel.app',   // Landing Page
   'https://biogrix-admin.vercel.app', // Admin Dashboard
+  'http://localhost:3001',            // Local Admin
   'http://localhost:3000',            // Local Frontend
   'http://localhost:4000'             // Local Backend
 ];
