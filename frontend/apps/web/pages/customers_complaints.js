@@ -101,12 +101,14 @@ export default function CustomerComplaints() {
                   <select name="role" value={formData.role} onChange={handleChange} className="w-full bg-transparent text-lg text-white outline-none appearance-none cursor-pointer">
                     <option value="farmer" className="text-neutral-900">Individual Farmer</option>
                     <option value="entrepreneur" className="text-neutral-900">Village Entrepreneur</option>
+                    <option value="ngo" className="text-neutral-900">NGO / Cooperative</option>
+                    <option value="other" className="text-neutral-900">Other</option>
                   </select>
                 </div>
               </div>
 
               <div className="relative border-b border-white/10 focus-within:border-red-500 transition-all py-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-red-400 mb-1 block italic">Your Complaint</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-red-400 mb-1 block">Your Complaint</label>
                 <textarea rows={3} name="complaint" value={formData.complaint} onChange={handleChange} placeholder="Describe the problem you are facing in detail..." className="w-full bg-transparent text-lg text-white outline-none resize-none" required />
               </div>
 
