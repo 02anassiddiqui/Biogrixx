@@ -16,7 +16,7 @@ export function Button({
     accent: 'bg-amber-400 hover:bg-amber-500 text-neutral-900 shadow-lg shadow-amber-400/20',
     white: 'bg-white hover:bg-neutral-100 text-primary shadow-xl', // New variant for dark sections
     black: 'bg-neutral-800 hover:bg-neutral-900 text-white shadow-xl',
-    
+    red: 'bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/20 hover:shadow-red-600/30',
   }
 
   const classes = `${base} ${variants[variant]} ${className}`

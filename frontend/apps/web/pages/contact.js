@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Container } from "../components/ui/Container";
 import { Section } from "../components/ui/Section";
@@ -14,6 +15,8 @@ import {
   Clock,
   Home as HomeIcon,
   Baby,
+  AlertCircle,
+  ArrowRight,
 } from "lucide-react";
 
 export default function Contact() {
@@ -52,8 +55,9 @@ export default function Contact() {
 
     try {
       // 🚀 CHANGE 1: Localhost URL hata kar Environment Variable wala logic lagaya
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/v1";
-      
+      const API_BASE_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/v1";
+
       const response = await fetch(`${API_BASE_URL}/customers/register`, {
         method: "POST",
         headers: {
@@ -65,8 +69,10 @@ export default function Contact() {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        alert("Badhiya! Aapki enquiry Professional Backend ke zariye save ho gayi hai.");
-        
+        alert(
+          "Badhiya! Aapki enquiry Professional Backend ke zariye save ho gayi hai.",
+        );
+
         // Form reset logic
         setFormData({
           name: "",
@@ -323,6 +329,32 @@ export default function Contact() {
                   </span>
                 </p>
               </div>
+
+              {/* 2. COMPLAINT BUTTON (Placed BOTTOM of the Status Badge) 🚀 */}
+              <div className="pt-2 flex flex-col gap-3 px-2">
+                <div className="text-left bg-red-600 hover:border-red-500/50 py-4 rounded-2xl transition-all group flex items-center justify-between px-6">
+                  <p className="text-base font-bold text-white">
+                    Register your Complaint
+                  </p>
+                  <AlertCircle
+                    className="text-red-400 group-hover:scale-110 transition-transform"
+                    size={20}
+                  />
+                </div>
+
+                <Button
+                  href="/customers_complaints"
+                  variant="red"
+                  className="px-10 text-base w-full sm:w-auto group"
+                >
+                  Register Here
+                  <ArrowRight
+                    className="ml-2 transition-transform group-hover:translate-x-1"
+                    size={20}
+                  />
+                </Button>
+              </div>
+              
             </div>
           </div>
         </Container>

@@ -41,7 +41,7 @@ const PROCESS_STEPS = [
   { 
     title: "Dung Collection", 
     desc: "Collect fresh dung daily from the cattle shed.",
-    img: "/images/bio_image_7.jpeg" 
+    img: "/images/bio_image_9.jpeg" 
   },
   { 
     title: "Preparation", 
@@ -56,7 +56,7 @@ const PROCESS_STEPS = [
   { 
     title: "Production", 
     desc: "Wait 2-3 days for gas to start forming naturally.",
-    img: "/images/bio_image_4.jpeg" 
+    img: "/images/bio_image_1.jpeg" 
   },
   { 
     title: "Usage", 
@@ -83,10 +83,10 @@ export default function BiogasGuide() {
             >
               Biogas Guide for Villages
             </motion.div>
-            <h1 className="text-5xl md:text-8xl font-black text-neutral-900 leading-[0.9] tracking-tighter mb-8">
-              Build Your Own Gas <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r italic from-primary to-emerald-600 ">
-                System from Dung.
+            <h1 className="text-5xl md:text-8xl font-black text-neutral-900 leading-[0.9] tracking-tighter mb-8 ">
+              Build Your Own <br />
+              <span className="text-transparent italic bg-clip-text bg-gradient-to-r from-primary to-emerald-600">
+                Biogas from Dung.
               </span>
             </h1>
             <p className="text-xl text-neutral-500 max-w-2xl leading-relaxed mb-12 font-medium">
@@ -109,7 +109,7 @@ export default function BiogasGuide() {
               <div key={i} className="space-y-2">
                 <p className="text-[10px] font-black uppercase text-neutral-400 tracking-widest">{fact.label}</p>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-black text-neutral-900">{fact.value.split(' ')[0]}</span>
+                  <span className="text-2xl font-black  text-neutral-900">{fact.value.split(' ')[0]}</span>
                   <span className="text-sm font-bold text-neutral-500">{fact.value.split(' ').slice(1).join(' ')}</span>
                 </div>
               </div>
@@ -123,7 +123,7 @@ export default function BiogasGuide() {
         <Container>
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div className="rounded-[3.5rem] overflow-hidden shadow-2xl border border-neutral-100 bg-neutral-100 aspect-video">
-              <img src="/images/bio_image_10.jpeg" alt="Biogas Plant Structure" className="w-full h-full object-cover" />
+              <img src="/images/bio_image_1.jpeg" alt="Biogas Plant Structure" className="w-full h-full object-cover" />
             </div>
             
             <div className="space-y-6">
@@ -143,7 +143,7 @@ export default function BiogasGuide() {
       </Section>
 
       {/* --- 4. PROCESS (Vertical Flow with Images) --- */}
-      <Section className="bg-neutral-950 py-24 rounded-[4rem] mx-4 md:mx-8">
+      <Section alt className="bg-neutral-950 py-24 rounded-[4rem] mx-4 md:mx-8">
         <Container narrow>
           <h2 className="text-4xl font-black  text-white uppercase tracking-tighter text-center mb-24">The 5-Step Process</h2>
           <div className="space-y-0 relative">
@@ -271,7 +271,7 @@ export default function BiogasGuide() {
       {/* --- 9. FINAL CTA --- */}
       <Section className="pb-24 pt-0">
         <Container>
-          <div className="bg-neutral-950 rounded-[5rem] p-16 md:p-32 text-center text-white relative overflow-hidden group">
+          <div alt className="bg-neutral-950 rounded-[5rem] p-16 md:p-32 text-center text-white relative overflow-hidden group">
              <div className="absolute inset-0 opacity-10 grayscale group-hover:grayscale-0 transition-all duration-1000">
                 <img src="/images/bio_image_3.jpeg" alt="Clean Kitchen Outcome" className="w-full h-full object-cover" />
              </div>
