@@ -38,7 +38,7 @@ export default function AdminDashboard() {
     try {
       // 🚀 CHANGE 2: Yahan localhost:4000 ki jagah `${API_BASE_URL}/customers` use kiya hai.
       // Dhyan rakhein ki variable mein agar pehle se /v1 hai, toh yahan dobara mat likhna.
-      const response = await fetch(`${API_BASE_URL}/v1/customers`, {
+      const response = await fetch(`${API_BASE_URL}/customers`, {
         headers: {
           "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
         },
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
     if (!window.confirm("Bhai, delete kar dein?")) return;
     try {
       // 🚀 CHANGE 3: Yahan DELETE request mein bhi localhost hata kar API_BASE_URL daal diya hai.
-      const response = await fetch(`${API_BASE_URL}/v1/customers/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/customers/${id}`, {
         method: "DELETE",
         headers: {
           "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
