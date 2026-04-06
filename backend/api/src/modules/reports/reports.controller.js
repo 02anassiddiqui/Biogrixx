@@ -1,12 +1,14 @@
-/**
- * Reports controller.
- * TODO: Implement request handlers.
- */
+const reportsService = require("./reports.service");
+const { validateReportQuery } = require("./reports.validation");
 
-const { success } = require('../../shared/utils/apiResponse')
-const reportsService = require('./reports.service')
+exports.getReports = async (req, res) => {
+  try {
+    const { isValid, errors } = validateReportQuery(req.query);
+    if (!isValid) return res.status(400).json({ success: false, message: errors[0] });
 
-exports.list = async (req, res) => {
-  const result = await reportsService.findAll()
-  success(res, result)
-}
+    const data = await reportsService.getDashboardSummary(req.query);
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

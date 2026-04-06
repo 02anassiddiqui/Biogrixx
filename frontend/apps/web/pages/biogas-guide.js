@@ -11,22 +11,22 @@ import {
   CheckCircle2,
   AlertTriangle,
   ArrowRight,
-  ArrowDown,
   Truck,
   Timer,
   MapPin,
   Info,
-  Globe,
-  Home
+  Users,
+  Shield,
+  ChevronRight,
+  ArrowDown
 } from "lucide-react";
 import Link from "next/link";
 
-// --- 1. DATA DEFINITIONS (Defined outside to avoid ReferenceErrors) ---
-const QUICK_FACTS = [
-  { label: "1 Cow Yield", value: "10kg Dung / Day", icon: <Truck size={20} /> },
-  { label: "Gas Production", value: "0.04 m³ / kg Dung", icon: <Zap size={20} /> },
-  { label: "Cooking Time", value: "2-3 Hours / m³", icon: <Flame size={20} /> },
-  { label: "Mix Ratio", value: "1:1 (Dung : Water)", icon: <Droplets size={20} /> },
+const QUICK_STATS = [
+  { label: "1 Cow / Day", value: "10kg Dung" },
+  { label: "Gas Yield", value: "0.04 m³ / kg" },
+  { label: "Cooking Time", value: "2-3 Hours" },
+  { label: "Water Ratio", value: "1 : 1 Mix" },
 ];
 
 const PLANT_SIZES = [
@@ -36,31 +36,30 @@ const PLANT_SIZES = [
   { size: "10 m³", houses: "8-10 Houses", cost: "₹95k - ₹1.2L", land: "850 sq ft" },
 ];
 
-// ✅ FIXED: Added 'img' property to each step
-const PROCESS_STEPS = [
+const STEPS = [
   { 
-    title: "Dung Collection", 
-    desc: "Collect fresh dung daily from the cattle shed.",
+    title: "Collect Dung", 
+    desc: "Collect fresh dung from cattle shed. Ensure it is free of stones, plastic, or soil for best gas quality.",
     img: "/images/bio_image_9.jpeg" 
   },
   { 
-    title: "Preparation", 
-    desc: "Mix dung with an equal amount of water (1:1 ratio).",
+    title: "Mix with Water (1:1)", 
+    desc: "Mix 1 bucket of dung with 1 bucket of water. Stir it until it becomes a smooth liquid (slurry).",
     img: "/images/bio_image_5.jpeg" 
   },
   { 
-    title: "Feeding", 
-    desc: "Pour the slurry into the inlet tank of the digester.",
+    title: "Feed the Digester", 
+    desc: "Pour the mix into the inlet tank. It flows down into the main underground digester naturally.",
     img: "/images/bio_image_3.jpeg" 
   },
   { 
-    title: "Production", 
-    desc: "Wait 2-3 days for gas to start forming naturally.",
+    title: "Natural Gas Production", 
+    desc: "Wait for bacteria to work. Gas collects in the top dome, ready to be used anytime.",
     img: "/images/bio_image_1.jpeg" 
   },
   { 
-    title: "Usage", 
-    desc: "Clean gas flows directly to your kitchen stove.",
+    title: "Start Cooking", 
+    desc: "Open the gas valve. You get a clean, blue, smoke-free flame for your kitchen stove.",
     img: "/images/bio_image_2.jpeg" 
   },
 ];
@@ -69,11 +68,11 @@ export default function BiogasGuide() {
   return (
     <div className="bg-white text-neutral-900 font-sans">
       <Head>
-        <title>Biogas Practical Guide | Biogrix</title>
+        <title>Biogas Guide for Villages | Biogrix</title>
       </Head>
 
       {/* --- 1. HERO SECTION --- */}
-      <Section className="bg-white pb-0">
+      <Section className="bg-white pb-20 md:pb-40">
         <Container>
           <div className="flex flex-col items-center text-center">
             <motion.div
@@ -83,88 +82,116 @@ export default function BiogasGuide() {
             >
               Biogas Guide for Villages
             </motion.div>
-            <h1 className="text-5xl md:text-8xl font-black text-neutral-900 leading-[0.9] tracking-tighter mb-8 ">
+            <h1 className="text-6xl md:text-8xl font-black text-neutral-900 leading-[0.9] tracking-tighter mb-12">
               Build Your Own <br />
               <span className="text-transparent italic bg-clip-text bg-gradient-to-r from-primary to-emerald-600">
                 Biogas from Dung.
               </span>
             </h1>
-            <p className="text-xl text-neutral-500 max-w-2xl leading-relaxed mb-12 font-medium">
+            <p className="text-xl text-neutral-500 max-w-2xl leading-relaxed mb-12 ">
               A practical handbook for farmers and village operators to achieve energy freedom.
             </p>
-            <Link href="/calculator">
-               <Button className="h-16 px-12 text-lg font-black  rounded-2xl shadow-xl uppercase tracking-tight">
-                 Check Plant Feasibility
-               </Button>
-            </Link>
+            <div className="animate-bounce text-neutral-300 flex justify-center items-center">
+            <ArrowDown size={32} />
+          </div>
           </div>
         </Container>
       </Section>
 
-      {/* --- 2. QUICK FACTS --- */}
-      <Section className="py-12 bg-neutral-50 border-y border-neutral-100">
+      {/* --- 2. STATS BAR --- */}
+      <div className="bg-neutral-900 py-12 -mt-10 relative z-20 mx-4 md:mx-12 rounded-[2rem] md:rounded-[3rem]">
         <Container>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {QUICK_FACTS.map((fact, i) => (
-              <div key={i} className="space-y-2">
-                <p className="text-[10px] font-black uppercase text-neutral-400 tracking-widest">{fact.label}</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-black  text-neutral-900">{fact.value.split(' ')[0]}</span>
-                  <span className="text-sm font-bold text-neutral-500">{fact.value.split(' ').slice(1).join(' ')}</span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {QUICK_STATS.map((stat, i) => (
+              <div key={i}>
+                <div className="text-2xl md:text-4xl font-black text-white mb-1">
+                  {stat.value}
+                </div>
+                <div className="text-neutral-500 text-[10px] font-bold uppercase tracking-widest">
+                  {stat.label}
                 </div>
               </div>
             ))}
           </div>
         </Container>
-      </Section>
+      </div>
 
-      {/* --- 3. STRUCTURE (Image Heavy) --- */}
-      <Section className="py-24">
+      {/* --- 3. STRUCTURE --- */}
+      <Section className="pt-32">
         <Container>
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="rounded-[3.5rem] overflow-hidden shadow-2xl border border-neutral-100 bg-neutral-100 aspect-video">
-              <img src="/images/bio_image_1.jpeg" alt="Biogas Plant Structure" className="w-full h-full object-cover" />
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="rounded-[3rem] overflow-hidden shadow-2xl border border-neutral-100 bg-neutral-100 aspect-video">
+              <img src="/images/bio_image_1.jpeg" alt="Biogas Plant Diagram" className="w-full h-full object-cover" />
             </div>
-            
             <div className="space-y-6">
-              <h2 className="text-4xl font-black  uppercase tracking-tighter">What is a <span className="text-primary">Biogas Plant?</span></h2>
-              <p className="text-lg text-neutral-500 leading-relaxed font-medium">
-                It is a simple underground tank. When you mix dung and water, bacteria create gas that collects in the dome and goes to your kitchen through a pipe.
+              <h2 className="text-primary font-bold uppercase tracking-widest text-sm">System Overview</h2>
+              <h3 className="text-4xl font-black text-neutral-900 leading-tight">
+                What is a Biogrix <br />Biogas Plant?
+              </h3>
+              <p className="text-lg text-neutral-600 leading-relaxed">
+                It is a simple brick or concrete tank built underground. You feed it cow dung and water, and natural bacteria convert it into methane gas. No electricity needed, just livestock.
               </p>
-              <div className="p-6 bg-emerald-50 rounded-3xl border border-emerald-100 flex gap-4">
-                 <Info size={24} className="text-emerald-700 shrink-0" />
-                 <p className="text-sm font-bold text-emerald-800 ">
-                   Tip: Place the plant in a sunny spot. Heat helps bacteria produce gas faster.
-                 </p>
+              <div className="flex items-center gap-4 py-2">
+                <div className="h-12 w-1 bg-emerald-500 rounded-full" />
+                <p className="text-neutral-500 font-bold">
+                  Works in all seasons. Provides gas 365 days a year.
+                </p>
               </div>
             </div>
           </div>
         </Container>
       </Section>
 
-      {/* --- 4. PROCESS (Vertical Flow with Images) --- */}
-      <Section alt className="bg-neutral-950 py-24 rounded-[4rem] mx-4 md:mx-8">
-        <Container narrow>
-          <h2 className="text-4xl font-black  text-white uppercase tracking-tighter text-center mb-24">The 5-Step Process</h2>
-          <div className="space-y-0 relative">
-            {/* The vertical line */}
-            <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-white/10 hidden md:block"></div>
-            
-            {PROCESS_STEPS.map((step, i) => (
-              <div key={i} className={`relative flex flex-col md:flex-row items-center justify-between mb-24 last:mb-0 ${i % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
-                
-                {/* ✅ FIXED: Image is now called from the array */}
-                <div className="w-full md:w-5/12 rounded-[2.5rem] overflow-hidden border border-white/5 mb-8 md:mb-0 shadow-2xl">
-                   <img src={step.img} alt={step.title} className="w-full h-full object-cover" />
-                </div>
-                
-                <div className="z-10 absolute left-0 md:left-1/2 -translate-x-1/2 w-12 h-12 bg-primary rounded-full border-4 border-neutral-950 flex items-center justify-center font-black text-white  shadow-[0_0_20px_rgba(16,185,129,0.4)]">
-                  {i + 1}
+      {/* --- 4. THE 5-STEP PROCESS (Updated: Big Instructional Layout) --- */}
+      <Section className="bg-neutral-50 py-24 md:py-32">
+        <Container>
+          <div className="text-center mb-20 md:mb-32">
+            <h2 className="text-primary font-bold uppercase tracking-widest text-sm mb-4">How it works</h2>
+            <h3 className="text-4xl md:text-6xl font-black text-neutral-900 tracking-tight leading-none">
+              Simple Steps to Free Fuel
+            </h3>
+          </div>
+
+          <div className="space-y-16 md:space-y-32">
+            {STEPS.map((step, i) => (
+              <div 
+                key={i} 
+                className={`flex flex-col md:flex-row items-center gap-10 md:gap-20 ${i % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}
+              >
+                {/* Large Visual Component */}
+                <div className="w-full md:w-1/2">
+                  <div className="relative group">
+                    <div className="absolute -inset-4 bg-emerald-500/10 rounded-[3rem] blur-2xl group-hover:bg-emerald-500/20 transition-all duration-500" />
+                    <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
+                      <img 
+                        src={step.img} 
+                        alt={step.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                      />
+                      {/* Step Number Badge */}
+                      <div className="absolute top-6 left-6 bg-neutral-900 text-white w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black shadow-xl">
+                        0{i + 1}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="w-full md:w-5/12 pl-16 md:pl-0 text-left md:text-left">
-                  <h3 className="text-2xl font-black text-white  uppercase mb-3 tracking-tight">{step.title}</h3>
-                  <p className="text-neutral-400 font-medium leading-relaxed">{step.desc}</p>
+                {/* Text Content */}
+                <div className="w-full md:w-1/2 space-y-6">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-widest">
+                    Step {i + 1}
+                  </div>
+                  <h4 className="text-3xl md:text-5xl font-black text-neutral-900 leading-tight">
+                    {step.title}
+                  </h4>
+                  <p className="text-lg md:text-xl text-neutral-500 leading-relaxed font-medium">
+                    {step.desc}
+                  </p>
+                  {i < STEPS.length - 1 && (
+                    <div className="pt-4 hidden md:block">
+                        <ArrowRight className={`text-emerald-300 w-12 h-12 ${i % 2 !== 0 ? 'rotate-180' : ''}`} />
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -173,26 +200,34 @@ export default function BiogasGuide() {
       </Section>
 
       {/* --- 5. PLANT SIZE TABLE --- */}
-      <Section className="py-24">
+      <Section>
         <Container>
-          <h2 className="text-4xl font-black  uppercase text-center mb-16 tracking-tighter">Compare Plant Sizes</h2>
-          <div className="overflow-hidden border border-neutral-100 rounded-[2.5rem] shadow-xl">
-            <table className="w-full text-left bg-white">
-              <thead className="bg-neutral-50 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 border-b">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <h2 className="text-primary font-bold tracking-tight uppercase mb-3 text-sm">
+              Sizing & Land
+            </h2>
+            <h3 className="text-3xl md:text-4xl font-black text-neutral-900 leading-none">
+              Choose your plant capacity.
+            </h3>
+          </div>
+
+          <div className="overflow-hidden border border-neutral-100 rounded-[2.5rem] shadow-sm bg-white">
+            <table className="w-full text-left">
+              <thead className="bg-neutral-50 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 border-b border-neutral-100">
                 <tr>
-                  <th className="p-8">Plant Capacity</th>
-                  <th className="p-8">Houses Supported</th>
-                  <th className="p-8">Cost Estimate</th>
-                  <th className="p-8">Land Required</th>
+                  <th className="p-8">Capacity</th>
+                  <th className="p-8">Coverage</th>
+                  <th className="p-8">Land Area</th>
+                  <th className="p-8">Estimated Cost</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-50">
+              <tbody className="divide-y divide-neutral-50 text-sm font-medium text-neutral-600">
                 {PLANT_SIZES.map((row, i) => (
                   <tr key={i} className="hover:bg-neutral-50 transition-colors">
-                    <td className="p-8 font-black  text-xl">{row.size}</td>
-                    <td className="p-8 font-bold text-neutral-500">{row.houses}</td>
-                    <td className="p-8 font-black text-emerald-600  text-lg">{row.cost}</td>
-                    <td className="p-8 font-bold text-neutral-400">{row.land}</td>
+                    <td className="p-8 font-black text-neutral-900 text-xl tracking-tight">{row.size}</td>
+                    <td className="p-8">{row.houses}</td>
+                    <td className="p-8">{row.land}</td>
+                    <td className="p-8 font-black text-primary text-lg">{row.cost}</td>
                   </tr>
                 ))}
               </tbody>
@@ -201,90 +236,140 @@ export default function BiogasGuide() {
         </Container>
       </Section>
 
-      {/* --- 6. HIGHLIGHT BOX --- */}
-      <Section className="py-12">
+      {/* --- 6. SAVINGS HIGHLIGHT --- */}
+      <Section primary className="bg-gradient-to-br from-primary to-emerald-700 overflow-hidden relative">
         <Container>
-          <div className="bg-primary p-12 md:p-20 rounded-[4rem] text-white relative overflow-hidden shadow-[0_40px_80px_-15px_rgba(16,185,129,0.4)]">
-            <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
-              <div>
-                <h3 className="text-4xl font-black  uppercase tracking-tighter mb-6">Village Impact</h3>
-                <div className="space-y-6">
-                  <p className="text-5xl md:text-6xl font-black  tracking-tight">10 Cows = <br/> 5 Houses</p>
-                  <p className="text-lg font-bold opacity-80 leading-relaxed">
-                    A small village cluster can save up to ₹6,000 every month combined. No smoke, no soot, just clean energy.
-                  </p>
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-white space-y-6">
+              <h2 className="text-4xl md:text-5xl font-black leading-tight tracking-tight">
+                10 Cows = 5 Houses. <br />
+                The Village Math.
+              </h2>
+              <p className="text-emerald-50 text-lg opacity-90 leading-relaxed">
+                A community grid with 10 cows produces enough gas to save 5 families over ₹6,000 combined every month.
+              </p>
+              <div className="flex items-center gap-4 py-4">
+                <div className="h-12 w-1 bg-white/30 rounded-full" />
+                <p className="text-emerald-100 font-bold uppercase text-xs tracking-widest">
+                  Verified Village Output
+                </p>
+              </div>
+            </div>
+
+            <div className="relative">
+              <Card className="bg-white p-10 md:p-12 rounded-[3rem] shadow-2xl relative z-10 text-center border-none">
+                <p className="text-neutral-500 font-bold uppercase tracking-widest text-[10px] mb-4">
+                  Potential Yearly Savings
+                </p>
+                <div className="text-6xl md:text-7xl font-black text-neutral-900 tracking-tighter mb-4">
+                  ₹14k+
                 </div>
-              </div>
-              <div className="rounded-[3rem] overflow-hidden shadow-2xl border border-white/20">
-                <img src="/images/bio_image_2.jpeg" alt="Village Biogas" className="w-full h-auto" />
-              </div>
+                <p className="text-primary font-black text-lg mb-8 uppercase tracking-tight">
+                  Saved Per Household
+                </p>
+                <div className="pt-8 border-t border-neutral-100 text-neutral-500 text-sm font-bold">
+                  Stop buying LPG. Start producing your own.
+                </div>
+              </Card>
+              <div className="absolute inset-0 bg-emerald-400 blur-[100px] opacity-20 -z-10" />
             </div>
           </div>
         </Container>
       </Section>
 
-      {/* --- 7. BENEFITS & MISTAKES --- */}
-      <Section className="py-24">
+      {/* --- 7. BENEFITS --- */}
+      <Section>
         <Container>
-          <div className="grid md:grid-cols-2 gap-16">
-            <div>
-              <h2 className="text-3xl font-black  uppercase mb-10">Why Switch?</h2>
-              <div className="space-y-6">
-                {[
-                  { t: "Save Money", d: "Zero monthly LPG bills." },
-                  { t: "Clean Kitchen", d: "Healthy air for your family." },
-                  { t: "Organic Slurry", d: "Natural fertilizer for your crops." }
-                ].map((item, i) => (
-                  <div key={i} className="flex gap-4 p-5 bg-neutral-50 rounded-2xl border border-neutral-100">
-                    <CheckCircle2 className="text-primary shrink-0 mt-1" size={20} />
-                    <div>
-                      <p className="font-black  uppercase text-neutral-900 tracking-tight">{item.t}</p>
-                      <p className="text-sm font-medium text-neutral-500">{item.d}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="bg-orange-50 border border-orange-100 p-10 rounded-[3.5rem] self-start shadow-sm">
-              <h3 className="flex items-center gap-3 text-orange-800 text-xl font-black  uppercase mb-8">
-                <AlertTriangle size={24} /> Avoid Mistakes
+          <div className="text-center mb-16">
+            <h2 className="text-primary font-bold uppercase tracking-widest text-sm mb-4">Why switch?</h2>
+            <h3 className="text-3xl md:text-4xl font-black text-neutral-900">Life-changing Benefits</h3>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card hover className="p-8 border-none bg-neutral-50 hover:bg-white border-t-4 border-t-emerald-500 transition-all">
+              <Flame className="text-emerald-500 mb-6" size={32} />
+              <h4 className="text-xl font-black text-neutral-900 mb-3">Smoke-Free Cooking</h4>
+              <p className="text-neutral-600 leading-relaxed text-sm">Protects your eyes and lungs. No more wood smoke or soot on kitchen walls.</p>
+            </Card>
+            <Card hover className="p-8 border-none bg-neutral-50 hover:bg-white border-t-4 border-t-blue-500 transition-all">
+              <Zap className="text-blue-500 mb-6" size={32} />
+              <h4 className="text-xl font-black text-neutral-900 mb-3">Organic Slurry</h4>
+              <p className="text-neutral-600 leading-relaxed text-sm">The leftover waste is a high-quality fertilizer that increases crop yield naturally.</p>
+            </Card>
+            <Card hover className="p-8 border-none bg-neutral-50 hover:bg-white border-t-4 border-t-primary transition-all">
+              <Truck className="text-primary mb-6" size={32} />
+              <h4 className="text-xl font-black text-neutral-900 mb-3">LPG Independence</h4>
+              <p className="text-neutral-600 leading-relaxed text-sm">No more waiting for gas cylinders or worrying about rising market prices.</p>
+            </Card>
+          </div>
+        </Container>
+      </Section>
+
+      {/* --- 8. MISTAKES --- */}
+      <Section dark className="rounded-[4rem] mx-4 md:mx-12 overflow-hidden mb-24">
+        <Container>
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-6">
+              <h2 className="text-orange-500 font-bold uppercase tracking-widest text-sm">Expert Advice</h2>
+              <h3 className="text-4xl font-black leading-tight text-white uppercase tracking-tighter">
+                Common Mistakes <br />to Avoid.
               </h3>
-              <ul className="space-y-5">
-                <li className="flex gap-3 text-sm font-bold text-orange-900/80 ">
-                  <div className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-2 shrink-0"></div>
-                  Mixing more than 1:1 water ruins gas production.
-                </li>
-                <li className="flex gap-3 text-sm font-bold text-orange-900/80 ">
-                  <div className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-2 shrink-0"></div>
-                  Skipping a day of feeding stops the system cycle.
-                </li>
-                <li className="flex gap-3 text-sm font-bold text-orange-900/80 ">
-                  <div className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-2 shrink-0"></div>
-                  Ignoring small pipe leaks wastes a full day's gas.
-                </li>
+              <p className="text-neutral-400 text-lg">
+                Building a plant is easy, but maintaining it correctly is what ensures gas production for 20+ years.
+              </p>
+
+              <ul className="space-y-6">
+                {[
+                  { title: "Water Ratio", desc: "Never add more than 1 bucket of water to 1 bucket dung." },
+                  { title: "Daily Feeding", desc: "Skipping feeding for even 2 days can stop the cycle." },
+                  { title: "Pipe Leaks", desc: "Check joints with soap-water monthly to avoid gas loss." },
+                ].map((item, i) => (
+                  <li key={i} className="flex gap-4">
+                    <div className="flex justify-center items-center flex-shrink-0 mt-1 bg-orange-500/20 w-10 h-10 rounded-lg">
+                      <Shield size={18} className="text-orange-500" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-white uppercase text-xs tracking-widest mb-1">{item.title}</h5>
+                      <p className="text-neutral-500 text-sm">{item.desc}</p>
+                    </div>
+                  </li>
+                ))}
               </ul>
+            </div>
+
+            <div className="bg-neutral-900 rounded-[3rem] p-12 border border-neutral-800 text-center">
+                <AlertTriangle className="text-orange-500 mx-auto mb-6" size={48} />
+                <blockquote className="text-xl font-medium text-neutral-300 mb-8 leading-relaxed italic">
+                  "Most village plants stop working not because of technical failure, but because farmers don't feed them daily."
+                </blockquote>
+                <p className="font-bold uppercase text-[10px] tracking-[0.2em] text-neutral-500">
+                  - Senior Field Engineer
+                </p>
             </div>
           </div>
         </Container>
       </Section>
 
       {/* --- 9. FINAL CTA --- */}
-      <Section className="pb-24 pt-0">
+      <Section className="bg-white">
         <Container>
-          <div alt className="bg-neutral-950 rounded-[5rem] p-16 md:p-32 text-center text-white relative overflow-hidden group">
-             <div className="absolute inset-0 opacity-10 grayscale group-hover:grayscale-0 transition-all duration-1000">
-                <img src="/images/bio_image_3.jpeg" alt="Clean Kitchen Outcome" className="w-full h-full object-cover" />
-             </div>
-             <div className="relative z-10">
-                <h2 className="text-4xl md:text-7xl font-black  uppercase mb-12 tracking-tighter leading-none">
-                  Calculate Your <br/> <span className="text-primary underline decoration-white decoration-2 underline-offset-8">Plant Size</span>
-                </h2>
-                <Link href="/calculator">
-                  <Button variant="primary" className="h-20 px-16 text-xl font-black  rounded-3xl group shadow-[0_20px_50px_rgba(16,185,129,0.3)]">
-                    Start Free Analysis <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform duration-300" />
-                  </Button>
-                </Link>
-             </div>
+          <div className="bg-primary rounded-[3rem] p-12 md:p-24 text-center relative overflow-hidden shadow-2xl shadow-primary/40">
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-8 relative tracking-tight uppercase leading-none">
+              Stop Buying Gas. <br /> Start Producing.
+            </h2>
+            <p className="text-emerald-50 text-xl mb-12 max-w-xl mx-auto relative font-medium">
+              See exactly how much gas your cows can produce and what it will cost.
+            </p>
+
+            <div className="flex justify-center relative">
+              <Button
+                href="/calculator"
+                variant="white"
+                className="h-20 px-16 text-xl shadow-xl font-black uppercase italic rounded-3xl group"
+              >
+                Start Free Analysis
+                <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" size={24} />
+              </Button>
+            </div>
           </div>
         </Container>
       </Section>

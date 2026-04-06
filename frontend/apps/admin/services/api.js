@@ -1,8 +1,3 @@
-/**
- * API client for backend.
- * TODO: Add auth headers, error handling.
- */
-
 // 🚀 CHANGE 1: '/v1' ko handle karne ka safe tareeka
 // Hum check karenge ki agar URL mein pehle se /v1 hai, toh dobara na jodein
 const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/v1';

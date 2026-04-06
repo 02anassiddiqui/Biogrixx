@@ -1,86 +1,61 @@
-/**
- * Customers controller.
- * TODO: Implement request handlers.
- */
+const customersService = require('./customers.service');
 
-// const { success } = require('../../../../shared/utils/apiResponse')
-// const customersService = require('./customers.service')
-
-// exports.list = async (req, res) => {
-//   const result = await customersService.findAll()
-//   success(res, result)
-// }
-
-// exports.getById = async (req, res) => {
-//   success(res, null)
-// }
-
-/**
- * Customers controller.
- * Handles incoming HTTP requests and sends responses.
- */
-const customersService = require("./customers.service");
-// Note: Path check kar lena aapke shared folder ke hisaab se
-const { sendSuccess, sendError } = require("../../shared/utils/apiResponse");
-
-/**
- * Jab kisan form submit karega
- */
-exports.createCustomer = async (req, res) => {
+// 🟢 AGENT APP: Kisan ki info fetch karna ID se
+exports.getCustomerById = async (req, res) => {
   try {
-    const lead = await customersService.registerLead(req.body);
-    // Professional standard response use kar rahe hain
+    const { id } = req.params;
+    const customer = await customersService.getCustomerDetails(id);
+    
+    return res.status(200).json({
+      success: true,
+      message: "Customer data synced from grid",
+      data: customer
+    });
+  } catch (error) {
+    return res.status(404).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};
+
+// 🔵 ADMIN: Saare customers ki list dekhna
+exports.getAllCustomers = async (req, res) => {
+  try {
+    const customers = await customersService.getAllCustomers();
+    return res.status(200).json({
+      success: true,
+      data: customers
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Sync failed" });
+  }
+};
+
+// 🔵 ADMIN: Naya kisan register karna
+exports.registerCustomer = async (req, res) => {
+  try {
+    const customer = await customersService.registerCustomer(req.body);
     return res.status(201).json({
       success: true,
-      message: "Farmer lead registered successfully",
-      data: lead,
+      message: "Kisan registered successfully!",
+      data: customer
     });
   } catch (error) {
-    console.error("❌ Controller Error:", error.message);
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-      error: error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-/**
- * Jab Admin Dashboard data maangega
- */
-exports.getCustomers = async (req, res) => {
-  try {
-    const leads = await customersService.getAllLeads();
-    return res.status(200).json({
-      success: true,
-      data: leads,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Error fetching leads",
-      error: error.message,
-    });
-  }
-};
-
-// Jab Admin Delete button click karega
-
+// 🔵 ADMIN: Customer delete karna
 exports.deleteCustomer = async (req, res) => {
   try {
-    const { id } = req.params; // URL se ID nikalne ke liye
+    const { id } = req.params;
     await customersService.deleteCustomer(id);
-
-    return res.status(200).json({
-      success: true,
-      message: "Lead deleted successfully",
+    return res.status(200).json({ 
+      success: true, 
+      message: "Customer decommissioned successfully" 
     });
   } catch (error) {
-    console.error("❌ Controller Error (Delete):", error.message);
-    return res.status(500).json({
-      success: false,
-      message: "Error deleting lead",
-      error: error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

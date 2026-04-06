@@ -53,12 +53,18 @@ export default function Contact() {
     e.preventDefault();
     setLoading(true);
 
+    // Data prepare karo (Convert string to number)
+    const submissionData = {
+      ...formData,
+      livestock_count: parseInt(formData.livestock_count) || 0
+    };
+
     try {
       // 🚀 CHANGE 1: Localhost URL hata kar Environment Variable wala logic lagaya
       const API_BASE_URL =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/v1";
 
-      const response = await fetch(`${API_BASE_URL}/customers/register`, {
+      const response = await fetch(`${API_BASE_URL}/leads/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

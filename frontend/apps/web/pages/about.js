@@ -12,29 +12,30 @@ import {
   ClipboardCheck,
   CheckCircle2,
   Target,
+  ArrowDown,
 } from "lucide-react";
 
 export default function About() {
   const pillars = [
     {
       icon: <BarChart3 className="text-primary" size={24} />,
-      title: "Utility Infrastructure",
-      desc: "Built for plants, distribution networks, and households to run gas supply reliably.",
+      title: "Plant & Network Management",
+      desc: "Manage your biogas plant and gas distribution network in one place. Track plant capacity, monitor performance, and ensure smooth gas supply to households.",
     },
     {
       icon: <Network className="text-primary" size={24} />,
-      title: "Meter Tracking",
-      desc: "Digital systems to track usage accurately, replacing error-prone manual records.",
+      title: "Gas Usage Tracking",
+      desc: "Track how much gas each household uses with a simple digital system. Replace manual records with accurate, real-time data.",
     },
     {
       icon: <ClipboardCheck className="text-primary" size={24} />,
-      title: "Automated Billing",
-      desc: "Seamlessly issue bills and collect payments with less paperwork and fewer errors.",
+      title: "Billing & Payments",
+      desc: "Automatically generate bills based on gas usage and track payments easily. Reduce errors, save time, and ensure steady income from your plant.",
     },
     {
       icon: <ShieldCheck className="text-primary" size={24} />,
-      title: "Maintenance Hub",
-      desc: "Centralized logs to handle maintenance requests and technical support instantly.",
+      title: "Maintenance & Support",
+      desc: "Handle complaints, leakage issues, and maintenance requests from a single dashboard. Keep your system reliable and your customers satisfied.",
     },
   ];
 
@@ -45,56 +46,65 @@ export default function About() {
       </Head>
 
       {/* --- HERO --- */}
-      <Section className="bg-slate-50 border-b border-neutral-100 pt-16 pb-40 md:pt-48 md:pb-72">
+      <Section className="bg-slate-50 border-b border-neutral-100 pb-20 md:pb-40">
         <Container narrow className="text-center">
-          {/* <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-bold mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-bold mb-6">
             <CheckCircle2 size={16} /> Established 2026
-          </div> */}
+          </div>
           <h1 className="text-6xl md:text-8xl font-black text-neutral-900 leading-[0.9] mb-8 tracking-tighter">
-            About <span className="text-transparent italic bg-clip-text bg-gradient-to-r from-primary to-emerald-600">Biogrix.</span>
+            About{" "}
+            <span className="text-transparent italic bg-clip-text bg-gradient-to-r from-primary to-emerald-600">
+              Biogrix.
+            </span>
           </h1>
-          <p className="text-xl text-neutral-600 leading-relaxed font-medium">
-            A biogas utility management platform built for plants, distribution
-            networks, and households. We help communities run their gas supply
-            more reliably.
+          <p className="text-xl text-neutral-600 leading-relaxed mb-4">
+             Biogrix helps communities and plant operators manage biogas production, gas distribution, and billing - all in one simple system.
           </p>
+          <p className="text-lg text-neutral-500 max-w-xl mx-auto mb-16">
+            From tracking gas usage to handling payments and maintenance, everything you need to run a reliable biogas network.
+          </p>
+          <div className="animate-bounce text-neutral-300 flex justify-center items-center">
+            <ArrowDown size={32} />
+          </div>
         </Container>
       </Section>
 
       {/* --- PROBLEM/SOLUTION --- */}
-      <Section>
+      <Section primary>
         <Container className="grid lg:grid-cols-2 gap-20 items-center">
           <div className="order-2 lg:order-1">
-            <h2 className="text-3xl font-bold text-neutral-900 mb-6 tracking-tight">
+            <h2 className="text-3xl font-bold text-white mb-6 tracking-tight">
               Solving the Last-Mile Challenges of Biogas.
             </h2>
-            <p className="text-neutral-600 leading-relaxed mb-8">
-              While biogas technology has advanced rapidly, the{" "}
-              <strong>management of distribution</strong> has remained stuck in
-              the past. Manual paper logs and untracked maintenance lead to
-              revenue loss and frustration.
+            <p className="text-white/70 text-lg leading-relaxed mb-8">
+              Many biogas plants fail not because of technology, but because of
+              poor management.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                "Eliminating Manual Error",
-                "Real-Time Data Access",
-                "Scalable Infrastructure",
+                "No proper usage tracking",
+                "No billing system",
+                "No maintenance records",
                 "Consumer Trust",
               ].map((text) => (
                 <div key={text} className="flex gap-2 items-center">
-                  <div className="bg-emerald-100 rounded-full p-1">
-                    <Zap size={12} className="text-primary" />
+                  <div className="bg-white rounded-full p-1">
+                    <Zap size={20} className="text-primary" />
                   </div>
-                  <span className="text-sm font-semibold text-neutral-700">
+                  <span className="text-base font-semibold text-white/80">
                     {text}
                   </span>
                 </div>
               ))}
             </div>
           </div>
-          <div className="order-1 lg:order-2 bg-neutral-100 rounded-3xl aspect-square flex items-center justify-center border border-neutral-200 text-neutral-300">
+          <div className="order-1 lg:order-2 bg-neutral-100 rounded-3xl aspect-square flex items-center justify-center text-neutral-300">
             {/* <Network size={120} /> */}
-            <img src="/images/bio_image_10.jpeg" alt="" className='w-full h-full object-cover object-center rounded-3xl'/>
+            <img
+              src="/images/bio_image_10.jpeg"
+              alt=""
+              className="w-full h-full object-cover object-center rounded-3xl"
+            />
           </div>
         </Container>
       </Section>
@@ -104,7 +114,7 @@ export default function About() {
         <Container>
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h3 className="text-primary font-bold uppercase tracking-widest text-sm mb-4">
-              Platform Architecture
+              Everything you need to run a biogas utility system
             </h3>
             <h4 className="text-4xl font-bold text-neutral-900">
               The Four Pillars of Biogrix
@@ -145,8 +155,8 @@ export default function About() {
         <Container narrow>
           <Target className="text-primary mx-auto mb-10" size={64} />
           <h2 className="text-4xl md:text-5xl font-black mb-8 tracking-tighter italic leading-tight">
-            "Our mission is to empower communities with the tools to manage
-            their own energy future."
+            "Our goal is to make biogas plants easy to manage, so villages can
+            produce and use their own energy."
           </h2>
           <p className="text-neutral-500 text-lg max-w-xl mx-auto">
             By digitizing the biogas lifecycle, we reduce the cost of operations

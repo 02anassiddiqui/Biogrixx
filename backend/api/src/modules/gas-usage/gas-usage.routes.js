@@ -1,11 +1,9 @@
-/**
- * Gas usage routes.
- */
+const express = require("express");
+const router = express.Router();
+const usageController = require("./gas-usage.controller");
+const { authGuard } = require("../../middleware/auth"); // Jaisa plants mein tha
 
-const express = require('express')
-const router = express.Router()
-const controller = require('./gas-usage.controller')
+router.post("/submit", usageController.submitReading); // ! No authGuard
+router.get("/history", authGuard, usageController.getHistory);
 
-router.get('/', controller.list)
-
-module.exports = router
+module.exports = router;

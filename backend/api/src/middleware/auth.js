@@ -3,7 +3,7 @@
  * Professional apps use JWT, but we'll start with a "Secret Key" for simplicity.
  */
 const authGuard = (req, res, next) => {
-  const adminSecret = req.headers['x-admin-secret'];
+  const adminSecret = req.headers["x-admin-secret"];
   const expectedSecret = process.env.ADMIN_SECRET;
 
   // 📝 Debugging ke liye (Terminal mein check karein)
@@ -17,9 +17,9 @@ const authGuard = (req, res, next) => {
     next();
   } else {
     console.log("❌ No Match! Access Denied.");
-    res.status(401).json({ 
-      success: false, 
-      message: "Bhai, aap authorized nahi ho!" 
+    res.status(401).json({
+      success: false,
+      message: "Bhai, aap authorized nahi ho!",
     });
   }
 };

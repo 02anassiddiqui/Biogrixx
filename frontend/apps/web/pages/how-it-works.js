@@ -20,6 +20,7 @@ import {
   Tractor,
   Building2,
   Briefcase,
+  ArrowDown,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -80,7 +81,7 @@ export default function HowItWorks() {
               Operational Roadmap
             </span>
 
-            <h1 className="text-6xl md:text-8xl font-black text-neutral-900 mb-6 leading-[0.9] tracking-tight">
+            <h1 className="ext-6xl md:text-8xl font-black text-neutral-900 mb-8 leading-[0.9] tracking-tighter">
               How Biogas
               <br />
               <span className="text-transparent italic bg-clip-text bg-gradient-to-r from-primary to-emerald-600">
@@ -88,11 +89,15 @@ export default function HowItWorks() {
               </span>
             </h1>
 
-            <p className="text-xl text-neutral-600 leading-relaxed max-w-2xl mx-auto font-medium">
+            <p className="text-xl text-neutral-600 leading-relaxed max-w-2xl mb-12 mx-auto">
               Biogrix helps communities convert organic waste into clean cooking
               gas and distribute it to households using a centralized, managed
               biogas grid system.
             </p>
+            <br />
+            <div className="animate-bounce text-neutral-300 flex justify-center items-center">
+              <ArrowDown size={32} />
+            </div>
           </motion.div>
         </Container>
       </Section>
@@ -100,7 +105,7 @@ export default function HowItWorks() {
       {/* --- 2. STEP PROCESS --- */}
       <Section
         primary
-        className="rounded-t-[4rem] md:rounded-t-[6rem] bg-gradient-to-r from-primary to-emerald-600 py-24"
+        className="rounded-t-[4rem] md:rounded-t-[6rem] from-primary to-emerald-700 overflow-hidden relative"
       >
         <Container>
           <div className="space-y-32">

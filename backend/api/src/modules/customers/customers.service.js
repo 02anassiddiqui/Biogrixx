@@ -1,38 +1,35 @@
-/**
- * Customers service.
- * TODO: Implement business logic.
- * All database access goes through repository.
- */
+const customersRepository = require("./customers.repository");
 
-
-/**
- * Customers service.
- * Business logic layer for customer/lead management.
- * Connects the Controller to the Repository.
- */
-const customersRepository = require('./customers.repository');
-
-/**
- * Nayi lead ko process aur register karne ke liye (Website Form)
- */
-exports.registerLead = async (formData) => {
-  // Aap yahan data validation ya formatting ka logic bhi daal sakte hain
-  return await customersRepository.create(formData);
-};
-
-/**
- * Saari leads ki list nikalne ke liye (Admin Dashboard)
- */
-exports.getAllLeads = async () => {
+// 1. Saare customers mangwana (Admin Dashboard ke liye)
+exports.getAllCustomers = async () => {
   return await customersRepository.findAll();
 };
 
-/**
- * Kisi specific lead ko delete karne ke liye
- */
+// 2. Naya kisan register karna
+// ✅ KEPT: Isse naye customers grid mein add honge
+exports.registerCustomer = async (customerData) => {
+  if (!customerData.name || !customerData.phone) {
+    throw new Error("Kisan ka naam aur phone hona zaroori hai!");
+  }
+  return await customersRepository.create(customerData);
+};
+
+// 3. Customer ko decommission (delete) karna
 exports.deleteCustomer = async (id) => {
-  // Business rule: Check kar sakte hain ki id valid hai ya nahi
-  if (!id) throw new Error("ID zaroori hai delete karne ke liye!");
-  
+  if (!id) throw new Error("Customer ID is required");
   return await customersRepository.remove(id);
+};
+
+// 4. Single Customer Details (Meter details ke saath)
+// ✅ NEW: Ye Agent App ke liye 'Real Development' wala part hai
+exports.getCustomerDetails = async (id) => {
+  if (!id) throw new Error("ID dhoondne ke liye zaroori hai");
+  
+  const customer = await customersRepository.findById(id);
+  
+  if (!customer) {
+    throw new Error("Kisan grid par nahi mila. ID check karein.");
+  }
+  
+  return customer;
 };

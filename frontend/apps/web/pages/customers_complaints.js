@@ -1,57 +1,46 @@
-import Head from "next/head";
-import { motion } from "framer-motion";
-import { Container } from "../components/ui/Container";
-import { Section } from "../components/ui/Section";
-import { Card } from "../components/ui/Card";
-import { Button } from "../components/ui/Button";
 import { useState } from "react";
-import { 
-  AlertCircle, 
-  Clock, 
-  ArrowLeft, 
-  CheckCircle2, 
-  Phone, 
-  User, 
-  MapPin 
+import {
+  Send,
+  Phone,
+  User,
+  MapPin,
+  AlertTriangle,
+  CheckCircle2,
+  Loader2,
 } from "lucide-react";
-import Link from "next/link";
 
-export default function CustomerComplaints() {
+export default function PublicComplaint() {
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     village: "",
-    role: "farmer",
-    complaint: "",
+    issue_type: "Gas Leakage",
+    description: "",
   });
 
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false); // Success state handle karne ke liye
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/v1";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/v1";
-      const response = await fetch(`${API_BASE_URL}/customers/complaint`, {
+      const res = await fetch(`${API_BASE_URL}/complaints/public`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+      const result = await res.json();
 
-      const result = await response.json();
-      if (response.ok && result.success) {
+      if (result.success) {
         setSubmitted(true);
-        setFormData({ name: "", phone: "", village: "", role: "farmer", complaint: "" });
       } else {
-        throw new Error(result.message || "Error submitting complaint.");
+        alert("Submission failed: " + result.message);
       }
-    } catch (error) {
-      alert("Error: " + error.message);
+    } catch (err) {
+      alert("A server error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -59,122 +48,185 @@ export default function CustomerComplaints() {
 
   if (submitted) {
     return (
-      <Section className="min-h-screen flex items-center justify-center bg-white">
-        <Container className="text-center">
-          <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8">
+      <div className="min-h-screen bg-emerald-50 flex items-center justify-center p-6 text-center">
+        <div className="bg-white p-12 rounded-[3rem] shadow-xl max-w-md animate-in zoom-in duration-300">
+          <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 size={40} />
           </div>
-          <h2 className="text-4xl font-black text-neutral-900 mb-4 uppercase italic">Shikayat Darj Ho Gayi!</h2>
-          <p className="text-neutral-500 mb-8 max-w-md mx-auto">Hamari technical team agle 2 ghante mein aapko call karegi. Emergency support dispatched hai.</p>
-          <Button onClick={() => setSubmitted(false)} variant="primary" className="italic font-bold">New Complaint</Button>
-        </Container>
-      </Section>
+          <h2 className="text-3xl font-black text-neutral-900 mb-4">
+            Complaint Registered!
+          </h2>
+          <p className="text-neutral-500 font-medium mb-8">
+            Your report has been successfully received. The Biogrix technical
+            team will contact you shortly to resolve the issue.
+          </p>
+          <button
+            onClick={() => setSubmitted(false)}
+            className="w-full bg-neutral-900 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-primary transition-all"
+          >
+            Submit Another Report
+          </button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="bg-white">
-      <Head>
-        <title>Report an Issue | Biogrix Support</title>
-      </Head>
-
-      {/* --- HERO SECTION --- */}
-      <Section className="pt-24 pb-12">
-        <Container>
-          <Link href="/contact" className="flex items-center gap-2 text-neutral-400 hover:text-primary mb-8 transition-all font-bold uppercase text-[10px] tracking-widest">
-            <ArrowLeft size={14} /> Back to Contact
-          </Link>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl">
-            <h1 className="text-6xl md:text-8xl font-black text-neutral-900 tracking-tighter mb-8 leading-[0.9]">
-              Report <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-600 italic">
-                An Issue.
-              </span>
-            </h1>
-            <p className="text-xl text-neutral-600 leading-relaxed font-medium max-w-2xl">
-              Facing issues with your plant or billing? Let us know. Biogrix support is active 24/7 for emergency repairs.
-            </p>
-          </motion.div>
-        </Container>
-      </Section>
-
-      {/* --- FORM SECTION (Corrected lowercase section tag) --- */}
-      <Section dark className="bg-neutral-900 py-20 relative overflow-hidden rounded-t-[4rem]">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-red-500/10 rounded-full blur-[120px] pointer-events-none" />
-        <Container>
-          <div className="grid lg:grid-cols-12 gap-12 items-start">
-            <form onSubmit={handleSubmit} className="lg:col-span-7 space-y-10">
-              <h2 className="text-3xl font-black text-white tracking-tight uppercase italic underline decoration-red-500 decoration-4 underline-offset-8">Complaint Registration</h2>
-              
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="relative border-b border-white/10 focus-within:border-red-500 transition-all py-2 group">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-1 block group-focus-within:text-red-500">Full Name</label>
-                  <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Your Name" className="w-full bg-transparent text-lg text-white outline-none" required />
-                </div>
-                <div className="relative border-b border-white/10 focus-within:border-red-500 transition-all py-2 group">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-1 block group-focus-within:text-red-500">Phone Number</label>
-                  <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Mobile Number" className="w-full bg-transparent text-lg text-white outline-none" required />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="relative border-b border-white/10 focus-within:border-red-500 transition-all py-2 group">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-1 block group-focus-within:text-red-500">Village / Community</label>
-                  <input type="text" name="village" value={formData.village} onChange={handleChange} placeholder="Village Name" className="w-full bg-transparent text-lg text-white outline-none" required />
-                </div>
-                <div className="relative border-b border-white/10 focus-within:border-red-500 transition-all py-2 group">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-1 block group-focus-within:text-red-500">I am a...</label>
-                  <select name="role" value={formData.role} onChange={handleChange} className="w-full bg-transparent text-lg text-white outline-none appearance-none cursor-pointer">
-                    <option value="farmer" className="text-neutral-900">Individual Farmer</option>
-                    <option value="entrepreneur" className="text-neutral-900">Village Entrepreneur</option>
-                    <option value="ngo" className="text-neutral-900">NGO / Cooperative</option>
-                    <option value="other" className="text-neutral-900">Other</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="relative border-b border-white/10 focus-within:border-red-500 transition-all py-2 group">
-                <label className="text-[10px] font-black uppercase tracking-widest text-red-400 mb-1 block group-focus-within:text-red-500">Your Complaint</label>
-                <textarea rows={3} name="complaint" value={formData.complaint} onChange={handleChange} placeholder="Describe the problem in detail (e.g. Gas leak, meter issue)..." className="w-full bg-transparent text-lg text-white outline-none resize-none font-medium" required />
-              </div>
-
-              <Button type="submit" disabled={loading} className="h-14 px-10 text-md font-bold bg-red-600 hover:bg-red-700 text-white rounded-full shadow-2xl transition-all active:scale-95">
-                {loading ? "Registering..." : "Submit Complaint"}
-                <AlertCircle className="ml-2" size={18} />
-              </Button>
-            </form>
-
-            {/* --- SIDEBAR INFO --- */}
-            <div className="lg:col-span-5 lg:pl-12 space-y-8 border-t lg:border-t-0 lg:border-l border-white/5 pt-8 lg:pt-0">
-               <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/5 backdrop-blur-sm">
-                  <h4 className="text-white font-black uppercase text-xs tracking-widest mb-6 flex items-center gap-2">
-                    <Clock size={16} className="text-red-500" /> Response Times
-                  </h4>
-                  <ul className="space-y-6">
-                    <li className="group">
-                      <p className="text-[10px] font-black text-red-500 uppercase mb-1">Critical Issues</p>
-                      <p className="text-white text-sm font-bold">Gas Leak / Fire Hazard: Under 1 Hour</p>
-                    </li>
-                    <li className="group">
-                      <p className="text-[10px] font-black text-neutral-500 uppercase mb-1">Technical Issues</p>
-                      <p className="text-white text-sm font-bold">Pressure Drop / Meter Fault: 4-6 Hours</p>
-                    </li>
-                    <li className="group">
-                      <p className="text-[10px] font-black text-neutral-500 uppercase mb-1">Administrative</p>
-                      <p className="text-white text-sm font-bold">Billing / Ownership: 24-48 Hours</p>
-                    </li>
-                  </ul>
-               </div>
-
-               <div className="p-8 border border-white/5 rounded-[2.5rem] bg-gradient-to-br from-red-500/10 to-transparent">
-                  <p className="text-xs text-neutral-400 leading-relaxed italic">
-                    "Management is the missing link. Biogrix ensures that your complaint is tracked from submission to field resolution."
-                  </p>
-               </div>
-            </div>
+    <div className="min-h-screen bg-[#F8FAFC] py-12 px-6">
+      <div className="max-w-xl mx-auto">
+        {/* Branding */}
+        <div className="flex items-center gap-3 mb-12 justify-center">
+          <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center font-black text-2xl italic text-white shadow-lg">
+            B
           </div>
-        </Container>
-      </Section>
+          <h1 className="text-3xl font-black text-neutral-900 tracking-tighter">
+            Biogrix{" "}
+            <span className="text-primary text-sm uppercase tracking-widest ml-1">
+              Support
+            </span>
+          </h1>
+        </div>
+
+        <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-neutral-100">
+          <h2 className="text-2xl font-black text-neutral-900 mb-2">
+            Help Center
+          </h2>
+          <p className="text-neutral-400 text-sm font-medium mb-10">
+            Please provide the details of your issue below.
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Full Name */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase text-neutral-400 tracking-widest ml-1">
+                Full Name
+              </label>
+              <div className="relative">
+                <User
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300"
+                  size={18}
+                />
+                <input
+                  required
+                  type="text"
+                  placeholder="e.g. John Doe"
+                  className="w-full pl-12 pr-6 py-4 bg-neutral-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary/20 font-bold"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Phone & Village Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-neutral-400 tracking-widest ml-1">
+                  Phone Number
+                </label>
+                <div className="relative">
+                  <Phone
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300"
+                    size={18}
+                  />
+                  <input
+                    required
+                    type="tel"
+                    placeholder="10-digit mobile number"
+                    className="w-full pl-12 pr-6 py-4 bg-neutral-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary/20 font-bold"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase text-neutral-400 tracking-widest ml-1">
+                  Village
+                </label>
+                <div className="relative">
+                  <MapPin
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300"
+                    size={18}
+                  />
+                  <input
+                    required
+                    type="text"
+                    placeholder="Enter village name"
+                    className="w-full pl-12 pr-6 py-4 bg-neutral-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary/20 font-bold"
+                    value={formData.village}
+                    onChange={(e) =>
+                      setFormData({ ...formData, village: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Issue Category */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase text-neutral-400 tracking-widest ml-1">
+                Issue Category
+              </label>
+              <div className="relative">
+                <AlertTriangle
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300"
+                  size={18}
+                />
+                <select
+                  className="w-full pl-12 pr-6 py-4 bg-neutral-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary/20 font-bold appearance-none cursor-pointer"
+                  value={formData.issue_type}
+                  onChange={(e) =>
+                    setFormData({ ...formData, issue_type: e.target.value })
+                  }
+                >
+                  <option value="Gas Leakage">Gas Leakage / Odor</option>
+                  <option value="Low Pressure">Low Gas Pressure</option>
+                  <option value="Billing Issue">Billing & Payments</option>
+                  <option value="Meter Issue">Meter / Hardware Issue</option>
+                  <option value="Other">Other / Miscellaneous</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase text-neutral-400 tracking-widest ml-1">
+                Detailed Description
+              </label>
+              <textarea
+                rows="4"
+                placeholder="Describe your issue in detail..."
+                className="w-full px-6 py-4 bg-neutral-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary/20 font-bold"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary text-white py-5 rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:bg-neutral-900 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin" size={20} />
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <Send size={20} />
+                  Submit Complaint
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

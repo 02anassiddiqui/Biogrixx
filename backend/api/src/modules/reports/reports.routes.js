@@ -1,11 +1,7 @@
-/**
- * Reports routes.
- */
+const express = require("express");
+const router = express.Router();
+const reportsController = require("./reports.controller");
 
-const express = require('express')
-const router = express.Router()
-const controller = require('./reports.controller')
+router.get("/summary", reportsController.getReports);
 
-router.get('/', controller.list)
-
-module.exports = router
+module.exports = router;

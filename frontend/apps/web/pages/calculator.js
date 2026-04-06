@@ -51,7 +51,7 @@ export default function BiogasCalculator() {
               <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
                 <Database size={20} />
               </div>
-              <h3 className="font-black tracking-tight text-xl uppercase italic">Input Node</h3>
+              <h3 className="font-black tracking-tight text-xl">Input Node</h3>
             </div>
 
             <div className="space-y-10">
@@ -77,8 +77,8 @@ export default function BiogasCalculator() {
               <div className="space-y-6">
                 <div className="flex justify-between items-end">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Total Animals</label>
-                  <span className="text-3xl font-black text-primary italic">
-                    {cows}<span className="text-sm not-italic ml-1 text-neutral-500 font-bold uppercase">Heads</span>
+                  <span className="text-3xl font-black text-primary ">
+                    {cows}<span className="text-sm not- ml-1 text-neutral-500 font-bold uppercase">Heads</span>
                   </span>
                 </div>
                 <input 
@@ -99,7 +99,7 @@ export default function BiogasCalculator() {
               <p className={`text-[10px] font-black uppercase tracking-widest ${feasible ? 'text-emerald-700' : 'text-red-700'}`}>
                 {feasible ? 'Feasibility: High' : 'Feasibility: Low'}
               </p>
-              <p className="text-[11px] text-neutral-500 font-medium italic">
+              <p className="text-[11px] text-neutral-500 font-medium ">
                 {feasible ? 'Supply meets community demand.' : 'Need more livestock for this grid.'}
               </p>
             </div>
@@ -108,7 +108,7 @@ export default function BiogasCalculator() {
           {/* 🚀 NEW PLACEMENT: CTA Bar (Under Indicator) */}
           <div className="bg-white rounded-[2.5rem] p-8 flex flex-col gap-6">
             {/* <div>
-              <p className="text-sm font-black italic uppercase tracking-tight">Technical Audit</p>
+              <p className="text-sm font-black  uppercase tracking-tight">Technical Audit</p>
               <p className="text-[11px] text-neutral-500 font-medium leading-tight mt-1">Request a professional site survey for your village grid.</p>
             </div> */}
             <Button variant="primary" className="w-full rounded-full h-14 group bg-gradient-to-r from-primary to-emerald-600">
@@ -131,7 +131,7 @@ export default function BiogasCalculator() {
                 <Zap size={14} fill="currentColor" /> Infrastructure Recommendation
               </div>
               <h4 className="text-sm font-bold text-white/70 mb-2 uppercase">Suggested Plant Capacity</h4>
-              <div className="text-7xl md:text-8xl font-black text-white tracking-tighter mb-6 italic">
+              <div className="text-7xl md:text-8xl font-black text-white tracking-tighter mb-6 ">
                 {plantSize}<span className="text-2xl font-bold ml-2 text-neutral-300 tracking-normal uppercase">m³ Plant</span>
               </div>
               <div className="flex items-center gap-2 text-[11px] font-black text-neutral-400 uppercase tracking-widest">
@@ -145,8 +145,8 @@ export default function BiogasCalculator() {
           <Card hover className="p-8 border-none bg-neutral-900 text-white relative overflow-hidden">
             <Flame className="text-primary mb-6" size={32} />
             <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Cooking Utility</p>
-            <h5 className="text-4xl font-black italic">{cookingHours.toFixed(1)} <span className="text-lg font-bold text-neutral-600">Hrs/Day</span></h5>
-            <p className="mt-4 text-[11px] text-neutral-400 leading-relaxed italic">
+            <h5 className="text-4xl font-black ">{cookingHours.toFixed(1)} <span className="text-lg font-bold text-neutral-600">Hrs/Day</span></h5>
+            <p className="mt-4 text-[11px] text-neutral-400 leading-relaxed ">
               Enough methane to support daily kitchen operations for {households} families.
             </p>
           </Card>
@@ -154,7 +154,7 @@ export default function BiogasCalculator() {
           <Card hover className="p-8 border-none bg-gradient-to-r from-primary to-emerald-600">
             <Wallet className="text-white mb-6" size={32} />
             <p className="text-[10px] font-bold uppercase tracking-widest mb-2 text-white/70">Financial Impact</p>
-            <h5 className="text-4xl text-white font-black italic">₹{monthlySavings.toLocaleString()} <span className="text-lg font-bold text-white/50">/Mo</span></h5>
+            <h5 className="text-4xl text-white font-black ">₹{monthlySavings.toLocaleString()} <span className="text-lg font-bold text-white/50">/Mo</span></h5>
             <p className="mt-4 text-[11px] text-emerald-50 leading-relaxed font-medium">
               Based on {cylindersSaved.toFixed(1)} LPG cylinders saved across the grid.
             </p>
@@ -179,7 +179,7 @@ function ResourceInfo({ label, value, icon }) {
       <div className="flex items-center gap-1.5 text-[9px] font-black text-white uppercase tracking-widest mb-1">
         {icon} {label}
       </div>
-      <div className="text-xl font-black text-white italic tracking-tighter">{value}</div>
+      <div className="text-xl font-black text-white  tracking-tighter">{value}</div>
     </div>
   );
 }

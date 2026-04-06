@@ -1,11 +1,10 @@
-/**
- * Billing routes.
- */
+const express = require("express");
+const router = express.Router();
+const billingController = require("./billing.controller");
+const { authGuard } = require("../../middleware/auth");
 
-const express = require('express')
-const router = express.Router()
-const controller = require('./billing.controller')
+// 🔒 Saare billing routes protected hone chahiye (Admin only)
+router.get("/", authGuard, billingController.getAllBills);
+router.patch("/:id/status", authGuard, billingController.updateBillStatus);
 
-router.get('/', controller.list)
-
-module.exports = router
+module.exports = router;

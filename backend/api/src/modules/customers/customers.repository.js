@@ -1,62 +1,53 @@
-/**
- * Customers repository.
- * TODO: Implement data access logic using Supabase client.
- */
-
-/**
- * Customers repository.
- * Handles all database operations for the leads/customers table.
- */
 const { supabase } = require("../../shared/database/supabaseClient");
 
-/**
- * Saari leads fetch karne ke liye (Admin Dashboard ke liye)
- */
-exports.findAll = async () => {
+// 1. Naya Customer register karne ke liye
+exports.create = async (customerData) => {
   const { data, error } = await supabase
-    .from("leads")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .from('customers')
+    .insert([customerData])
+    .select(`*, villages(name), plants(name)`)
+    .single();
 
-  if (error) {
-    console.error("❌ Repository Error (findAll):", error.message);
-    throw error;
-  }
+  if (error) throw error;
   return data;
 };
 
-/**
- * Nayi lead save karne ke liye (Website Form ke liye)
- */
-exports.create = async (leadData) => {
+// 2. Saare Customers fetch karne ke liye
+exports.findAll = async () => {
   const { data, error } = await supabase
-    .from("leads")
-    .insert([
-      {
-        name: leadData.name,
-        phone: leadData.phone,
-        village: leadData.village,
-        livestock_count: leadData.livestock_count,
-        role: leadData.role,
-        message: leadData.message,
-        location_details: leadData.location_details,
-      },
-    ])
-    .select();
+    .from('customers')
+    .select(`
+      *,
+      villages ( name, district, state ),
+      plants ( name, capacity )
+    `)
+    .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error("❌ Repository Error (create):", error.message);
-    throw error;
-  }
-  return data[0];
+  if (error) throw error;
+  return data;
 };
 
-exports.remove = async (id) => {
-  const { error } = await supabase.from("leads").delete().eq("id", id);
+// 3. ID se single customer dhoondne ke liye
+// ✅ CHANGE: Added 'meters' join aur trailing comma fix kiya taaki reading mil sake
+exports.findById = async (id) => {
+  const { data, error } = await supabase
+    .from('customers')
+    .select(`
+      *,
+      villages(name),
+      plants(name),
+      meters!customer_id(serial_number, last_reading, status)
+    `) // 👈 Join update: meters table se data uthane ke liye
+    .eq('id', id)
+    .single();
 
-  if (error) {
-    console.error("❌ Repository Error (Delete):", error.message);
-    throw error;
-  }
+  if (error) throw error;
+  return data;
+};
+
+// 4. Customer ko delete karne ke liye
+exports.remove = async (id) => {
+  const { error } = await supabase.from('customers').delete().eq('id', id);
+  if (error) throw error;
   return true;
 };
