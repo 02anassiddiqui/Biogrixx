@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Trans from "../components/ui/Trans"; // 🚀 Import Trans
+import { useLanguage } from "../context/LanguageContext"; // 👈 Context hook
 import {
   Send,
   Phone,
@@ -10,6 +12,7 @@ import {
 } from "lucide-react";
 
 export default function PublicComplaint() {
+  const { translate, lang } = useLanguage(); // 👈 For manual translations
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
@@ -37,15 +40,21 @@ export default function PublicComplaint() {
       if (result.success) {
         setSubmitted(true);
       } else {
-        alert("Submission failed: " + result.message);
+        const errorMsg =
+          (await translate("Submission failed: ")) + (result.message || "");
+        alert(errorMsg);
       }
     } catch (err) {
-      alert("A server error occurred. Please try again later.");
+      const serverError = await translate(
+        "A server error occurred. Please try again later.",
+      );
+      alert(serverError);
     } finally {
       setLoading(false);
     }
   };
 
+  // --- ✅ SUCCESS SCREEN ---
   if (submitted) {
     return (
       <div className="min-h-screen bg-emerald-50 flex items-center justify-center p-6 text-center">
@@ -54,17 +63,19 @@ export default function PublicComplaint() {
             <CheckCircle2 size={40} />
           </div>
           <h2 className="text-3xl font-black text-neutral-900 mb-4">
-            Complaint Registered!
+            <Trans>Complaint Registered!</Trans>
           </h2>
           <p className="text-neutral-500 font-medium mb-8">
-            Your report has been successfully received. The Biogrix technical
-            team will contact you shortly to resolve the issue.
+            <Trans>
+              Your report has been successfully received. The Biogrix technical
+              team will contact you shortly to resolve the issue.
+            </Trans>
           </p>
           <button
             onClick={() => setSubmitted(false)}
             className="w-full bg-neutral-900 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-primary transition-all"
           >
-            Submit Another Report
+            <Trans>Submit Another Report</Trans>
           </button>
         </div>
       </div>
@@ -82,24 +93,24 @@ export default function PublicComplaint() {
           <h1 className="text-3xl font-black text-neutral-900 tracking-tighter">
             Biogrix{" "}
             <span className="text-primary text-sm uppercase tracking-widest ml-1">
-              Support
+              <Trans>Support</Trans>
             </span>
           </h1>
         </div>
 
         <div className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-neutral-100">
           <h2 className="text-2xl font-black text-neutral-900 mb-2">
-            Help Center
+            <Trans>Help Center</Trans>
           </h2>
           <p className="text-neutral-400 text-sm font-medium mb-10">
-            Please provide the details of your issue below.
+            <Trans>Please provide the details of your issue below.</Trans>
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Full Name */}
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-neutral-400 tracking-widest ml-1">
-                Full Name
+                <Trans>Full Name</Trans>
               </label>
               <div className="relative">
                 <User
@@ -109,7 +120,7 @@ export default function PublicComplaint() {
                 <input
                   required
                   type="text"
-                  placeholder="e.g. John Doe"
+                  placeholder={lang === "English" ? "e.g. John Doe" : ""}
                   className="w-full pl-12 pr-6 py-4 bg-neutral-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary/20 font-bold"
                   value={formData.name}
                   onChange={(e) =>
@@ -123,7 +134,7 @@ export default function PublicComplaint() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-neutral-400 tracking-widest ml-1">
-                  Phone Number
+                  <Trans>Phone Number</Trans>
                 </label>
                 <div className="relative">
                   <Phone
@@ -133,7 +144,9 @@ export default function PublicComplaint() {
                   <input
                     required
                     type="tel"
-                    placeholder="10-digit mobile number"
+                    placeholder={
+                      lang === "English" ? "10-digit mobile number" : ""
+                    }
                     className="w-full pl-12 pr-6 py-4 bg-neutral-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary/20 font-bold"
                     value={formData.phone}
                     onChange={(e) =>
@@ -144,7 +157,7 @@ export default function PublicComplaint() {
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-neutral-400 tracking-widest ml-1">
-                  Village
+                  <Trans>Village</Trans>
                 </label>
                 <div className="relative">
                   <MapPin
@@ -154,7 +167,7 @@ export default function PublicComplaint() {
                   <input
                     required
                     type="text"
-                    placeholder="Enter village name"
+                    placeholder={lang === "English" ? "Enter village name" : ""}
                     className="w-full pl-12 pr-6 py-4 bg-neutral-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary/20 font-bold"
                     value={formData.village}
                     onChange={(e) =>
@@ -168,7 +181,7 @@ export default function PublicComplaint() {
             {/* Issue Category */}
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-neutral-400 tracking-widest ml-1">
-                Issue Category
+                <Trans>Issue Category</Trans>
               </label>
               <div className="relative">
                 <AlertTriangle
@@ -182,23 +195,41 @@ export default function PublicComplaint() {
                     setFormData({ ...formData, issue_type: e.target.value })
                   }
                 >
-                  <option value="Gas Leakage">Gas Leakage / Odor</option>
-                  <option value="Low Pressure">Low Gas Pressure</option>
-                  <option value="Billing Issue">Billing & Payments</option>
-                  <option value="Meter Issue">Meter / Hardware Issue</option>
-                  <option value="Other">Other / Miscellaneous</option>
+                  <option value="Gas Leakage">
+                    {lang === "English" ? "Gas Leakage / Odor" : "Gas Leakage"}
+                  </option>
+                  <option value="Low Pressure">
+                    {lang === "English" ? "Low Gas Pressure" : "Low Pressure"}
+                  </option>
+                  <option value="Billing Issue">
+                    {lang === "English"
+                      ? "Billing & Payments"
+                      : "Billing Issue"}
+                  </option>
+                  <option value="Meter Issue">
+                    {lang === "English"
+                      ? "Meter / Hardware Issue"
+                      : "Meter Issue"}
+                  </option>
+                  <option value="Other">
+                    {lang === "English" ? "Other / Miscellaneous" : "Other"}
+                  </option>
                 </select>
+                {/* Note: Select labels ko Gemini automatically handle karega through Trans if we wrap them, 
+                    but options are better handled like this for logic stability */}
               </div>
             </div>
 
             {/* Description */}
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-neutral-400 tracking-widest ml-1">
-                Detailed Description
+                <Trans>Detailed Description</Trans>
               </label>
               <textarea
                 rows="4"
-                placeholder="Describe your issue in detail..."
+                placeholder={
+                  lang === "English" ? "Describe your issue in detail..." : ""
+                }
                 className="w-full px-6 py-4 bg-neutral-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary/20 font-bold"
                 value={formData.description}
                 onChange={(e) =>
@@ -215,12 +246,12 @@ export default function PublicComplaint() {
               {loading ? (
                 <>
                   <Loader2 className="animate-spin" size={20} />
-                  Submitting...
+                  <Trans>Submitting...</Trans>
                 </>
               ) : (
                 <>
                   <Send size={20} />
-                  Submit Complaint
+                  <Trans>Submit Complaint</Trans>
                 </>
               )}
             </button>

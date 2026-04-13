@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { apiRequest } from "../services/api";
 import {
   Wrench,
   Clock,
@@ -38,13 +39,8 @@ export default function MaintenanceModule() {
   const fetchUnifiedData = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/maintenance`, {
-        headers: {
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-        },
-      });
-      const result = await res.json();
-      if (result.success) setData(result.data);
+      const res = await apiRequest("/maintenance");
+      if (res.success) setData(res.data);
     } catch (err) {
       console.error("Fetch failed:", err);
     } finally {
@@ -64,7 +60,7 @@ export default function MaintenanceModule() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
+          "x-admin-secret": localStorage.getItem("biogrix_auth_token"),
         },
         body: JSON.stringify({
           ...formData,
@@ -92,7 +88,7 @@ export default function MaintenanceModule() {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
+          "x-admin-secret": localStorage.getItem("biogrix_auth_token"),
         },
         body: JSON.stringify({ status }),
       });

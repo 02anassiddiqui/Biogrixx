@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { apiRequest } from "../services/api";
 import { AlertTriangle, CheckCircle, Clock, Search, Filter, Loader2, Phone, MapPin } from "lucide-react";
 
 export default function AdminComplaints() {
@@ -9,11 +10,8 @@ export default function AdminComplaints() {
   const fetchTickets = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/v1/complaints", {
-        headers: { "x-admin-secret": localStorage.getItem("biogrix_admin_key") }
-      });
-      const result = await res.json();
-      if (result.success) setTickets(result.data);
+      const res = await apiRequest("/complaints");
+      if (res.success) setTickets(res.data);
     } finally { setLoading(false); }
   };
 

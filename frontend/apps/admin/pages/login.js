@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { Lock, ArrowRight, ShieldCheck } from "lucide-react";
+// 🚀 Eye aur EyeOff icons add kiye
+import { Lock, Mail, ArrowRight, ShieldCheck, Eye, EyeOff } from "lucide-react";
 
 export default function AdminLogin() {
-  const [passkey, setPasskey] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // 👁️ Password visibility state
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -13,25 +16,28 @@ export default function AdminLogin() {
     setError("");
 
     try {
-      // 🚀 Backend se password verify kar rahe hain
       const API_BASE_URL =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/v1";
+
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: passkey }),
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
       });
 
       const result = await response.json();
 
       if (result.success) {
-        localStorage.setItem("biogrix_admin_key", result.token);
+        localStorage.setItem("biogrix_auth_token", result.token);
         router.push("/");
       } else {
         setError(result.message);
       }
     } catch (err) {
-      setError("Server se connect nahi ho pa raha!");
+      setError("Server connection failed!");
     }
   };
 
@@ -47,28 +53,53 @@ export default function AdminLogin() {
             <ShieldCheck className="text-emerald-500" size={40} />
           </div>
           <h1 className="text-4xl font-black text-white tracking-tighter leading-none mb-2">
-            Control <br />{" "}
-            <span className="text-emerald-500 italic">Access.</span>
+            Secure <br />{" "}
+            <span className="text-emerald-500 italic">Login.</span>
           </h1>
-          <p className="text-neutral-500 text-xs font-bold uppercase tracking-[0.2em]">
-            Digital Infrastructure Node
-          </p>
         </div>
 
         <form onSubmit={handleLogin} className="mt-8 space-y-4">
+          {/* --- EMAIL FIELD --- */}
+          <div className="relative group">
+            <Mail
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 group-focus-within:text-emerald-500 transition-colors"
+              size={18}
+            />
+            <input
+              type="email"
+              required
+              placeholder="ADMIN EMAIL"
+              className="w-full pl-12 pr-4 py-5 bg-neutral-800/50 border border-neutral-700 rounded-2xl text-white font-black tracking-widest text-[10px] outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          {/* --- PASSWORD FIELD --- */}
           <div className="relative group">
             <Lock
               className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 group-focus-within:text-emerald-500 transition-colors"
               size={18}
             />
+
             <input
-              type="password"
+              // 🔄 Dynamic type: password ya text
+              type={showPassword ? "text" : "password"}
               required
-              placeholder="ENTER MASTER PASSKEY"
-              className="w-full pl-12 pr-4 py-5 bg-neutral-800/50 border border-neutral-700 rounded-2xl text-white font-black tracking-widest text-[10px] outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all uppercase placeholder:text-neutral-600"
-              value={passkey}
-              onChange={(e) => setPasskey(e.target.value)}
+              placeholder="MASTER PASSKEY"
+              className="w-full pl-12 pr-12 py-5 bg-neutral-800/50 border border-neutral-700 rounded-2xl text-white font-black tracking-widest text-[10px] outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
+
+            {/* 👁️ Eye Toggle Button */}
+            <button
+              type="button" // 👈 Important: taaki form submit na ho jaye
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-emerald-500 transition-colors focus:outline-none"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
 
           {error && (
@@ -81,13 +112,9 @@ export default function AdminLogin() {
             type="submit"
             className="w-full flex items-center justify-center gap-3 bg-white text-black px-8 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-emerald-500 hover:text-white transition-all shadow-2xl active:scale-[0.98]"
           >
-            Access Dashboard <ArrowRight size={16} />
+            Enter Dashboard <ArrowRight size={16} />
           </button>
         </form>
-
-        <p className="text-center text-neutral-600 text-[9px] font-black uppercase tracking-widest">
-          © 2026 Biogrix Utility Management • Encryption Active
-        </p>
       </div>
     </div>
   );

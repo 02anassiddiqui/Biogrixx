@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { apiRequest } from "../services/api"; // ✅ Centralized API Handler
 import {
   Activity,
   Plus,
@@ -23,12 +24,12 @@ export default function MetersModule() {
   // Modals States
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false); // 👈 New Edit Modal State
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Form States
   const [searchTerm, setSearchTerm] = useState("");
   const [newMeter, setNewMeter] = useState({ serial_number: "", plant_id: "" });
-  const [editingMeter, setEditingMeter] = useState(null); // 👈 State for the meter being edited
+  const [editingMeter, setEditingMeter] = useState(null);
   const [plants, setPlants] = useState([]);
 
   // Assignment States
@@ -39,27 +40,18 @@ export default function MetersModule() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-  // --- 📡 FETCH DATA ---
+  // --- 📡 1. FETCH DATA ---
   const fetchData = async () => {
     setLoading(true);
     try {
-      const headers = {
-        "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-      };
+      const meterRes = await apiRequest("/meters");
+      if (meterRes.success) setMeters(meterRes.data);
 
-      const meterRes = await fetch(`${API_BASE_URL}/v1/meters`, { headers });
-      const meterResult = await meterRes.json();
-      if (meterResult.success) setMeters(meterResult.data);
-
-      const plantRes = await fetch(`${API_BASE_URL}/v1/plants`, { headers });
-      const plantResult = await plantRes.json();
+      const plantResult = await apiRequest("/plants");
       if (plantResult.success) setPlants(plantResult.data);
 
-      const custRes = await fetch(`${API_BASE_URL}/v1/customers`, { headers });
-      const custResult = await custRes.json();
+      const custResult = await apiRequest("/customers");
       if (custResult.success) {
         const pending = custResult.data.filter(
           (c) => !c.meter_number || c.meter_number === "PENDING",
@@ -77,54 +69,45 @@ export default function MetersModule() {
     fetchData();
   }, []);
 
-  // --- 🚀 REGISTER NEW METER ---
+  // --- 🚀 2. REGISTER NEW METER ---
   const handleRegisterMeter = async (e) => {
     e.preventDefault();
     if (!newMeter.plant_id) return alert("Bhai, Plant select karo!");
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/v1/meters/register`, {
+      const result = await apiRequest("/meters/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-        },
-        body: JSON.stringify(newMeter),
+        body: newMeter,
       });
-      if ((await response.json()).success) {
+
+      if (result.success) {
         setShowAddModal(false);
         setNewMeter({ serial_number: "", plant_id: "" });
         fetchData();
       }
+    } catch (error) {
+      console.error("Registration error:", error.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // --- 📝 UPDATE METER DETAILS ---
+  // --- 📝 3. UPDATE METER DETAILS ---
   const handleUpdateMeter = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/v1/meters/${editingMeter.id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-          },
-          body: JSON.stringify({
-            serial_number: editingMeter.serial_number,
-            status: editingMeter.status,
-          }),
+      const result = await apiRequest(`/meters/${editingMeter.id}`, {
+        method: "PATCH",
+        body: {
+          serial_number: editingMeter.serial_number,
+          status: editingMeter.status,
         },
-      );
+      });
 
-      const result = await response.json();
       if (result.success) {
         setShowEditModal(false);
-        fetchData(); // Sync with DB
+        fetchData();
       } else {
         alert("Update failed: " + result.message);
       }
@@ -135,28 +118,23 @@ export default function MetersModule() {
     }
   };
 
-  // --- 🔗 ASSIGN METER TO CUSTOMER ---
+  // --- 🔗 4. ASSIGN METER TO CUSTOMER ---
   const handleAssignMeter = async (e) => {
     e.preventDefault();
     if (!assignmentData.customer_id) return alert("Bhai, Kisan select karo!");
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/v1/meters/assign`, {
+      const result = await apiRequest("/meters/assign", {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-        },
-        body: JSON.stringify({
+        body: {
           meter_id: selectedMeter.id,
           customer_id: assignmentData.customer_id,
           serial_number: selectedMeter.serial_number,
           installation_date: assignmentData.installation_date,
-        }),
+        },
       });
 
-      const result = await response.json();
       if (result.success) {
         alert("Hardware successfully linked to Customer!");
         setShowAssignModal(false);
@@ -171,6 +149,7 @@ export default function MetersModule() {
     }
   };
 
+  // --- 🗑️ 5. DELETE METER ---
   const handleDelete = async (id) => {
     if (
       !window.confirm(
@@ -178,22 +157,13 @@ export default function MetersModule() {
       )
     )
       return;
-
     try {
-      const res = await fetch(`${API_BASE_URL}/v1/meters/${id}`, {
+      const result = await apiRequest(`/meters/${id}`, {
         method: "DELETE",
-        headers: {
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-        },
       });
-
-      const result = await res.json();
-
       if (result.success) {
         alert("Success: Meter removed from inventory.");
-        fetchData(); // ✅ 'fetchMeters()' ki jagah 'fetchData()' kar diya
-      } else {
-        alert("Error: " + result.message);
+        fetchData();
       }
     } catch (err) {
       console.error("Delete failed:", err);
@@ -248,13 +218,13 @@ export default function MetersModule() {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="w-full md:w-auto bg-neutral-900 text-white px-8 py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary transition-all active:scale-95 shadow-lg"
+          className="w-full md:w-auto bg-neutral-900 text-white px-8 py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-primary transition-all shadow-lg"
         >
           <Plus size={18} /> Register Meter
         </button>
       </div>
 
-      {/* --- METERS TABLE --- */}
+      {/* --- TABLE --- */}
       <div className="px-8">
         <div className="bg-white rounded-[2.5rem] border border-neutral-100 overflow-hidden shadow-sm">
           <table className="w-full text-left border-collapse">
@@ -319,18 +289,19 @@ export default function MetersModule() {
                     </td>
                     <td className="px-8 py-6 text-right">
                       <div className="flex justify-end gap-2">
+                        {/* ✅ Actions Buttons with Static Colors */}
                         <button
                           onClick={() => {
                             setEditingMeter(meter);
                             setShowEditModal(true);
                           }}
-                          className="p-2.5 text-neutral-300 hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
+                          className="p-2.5 text-blue-600 rounded-xl transition-all"
                         >
                           <Settings size={16} />
                         </button>
                         <button
                           onClick={() => handleDelete(meter.id)}
-                          className="p-2.5 text-neutral-200 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                          className="p-2.5 text-red-500 rounded-xl transition-all"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -344,7 +315,7 @@ export default function MetersModule() {
         </div>
       </div>
 
-      {/* --- 🛠️ MODAL: REGISTER NEW METER --- */}
+      {/* --- MODALS --- */}
       {showAddModal && (
         <Modal
           title="Register New Hardware"
@@ -360,7 +331,6 @@ export default function MetersModule() {
                 setNewMeter({ ...newMeter, serial_number: e.target.value })
               }
             />
-
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-neutral-400 ml-1">
                 Plant Unit
@@ -380,13 +350,11 @@ export default function MetersModule() {
                 ))}
               </select>
             </div>
-
             <SubmitButton loading={isSubmitting} label="ADD TO INVENTORY" />
           </form>
         </Modal>
       )}
 
-      {/* --- 🛠️ MODAL: EDIT METER DETAILS --- */}
       {showEditModal && editingMeter && (
         <Modal title="Edit Meter Info" close={() => setShowEditModal(false)}>
           <form onSubmit={handleUpdateMeter} className="space-y-6">
@@ -401,7 +369,6 @@ export default function MetersModule() {
                 })
               }
             />
-
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-neutral-400 ml-1">
                 Update Status
@@ -419,13 +386,11 @@ export default function MetersModule() {
                 <option value="inactive">Inactive (Band)</option>
               </select>
             </div>
-
             <SubmitButton loading={isSubmitting} label="SAVE CHANGES" />
           </form>
         </Modal>
       )}
 
-      {/* --- 🛠️ MODAL: ASSIGN TO CUSTOMER --- */}
       {showAssignModal && (
         <Modal title="Assign Hardware" close={() => setShowAssignModal(false)}>
           <div className="mb-6 p-4 bg-primary/5 rounded-2xl border border-primary/10 flex items-center justify-between">
@@ -439,7 +404,6 @@ export default function MetersModule() {
             </div>
             <ArrowRight className="text-primary opacity-30" />
           </div>
-
           <form onSubmit={handleAssignMeter} className="space-y-6">
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-neutral-400 ml-1">
@@ -463,7 +427,6 @@ export default function MetersModule() {
                 ))}
               </select>
             </div>
-
             <InputField
               type="date"
               label="Installation Date"
@@ -476,7 +439,6 @@ export default function MetersModule() {
                 })
               }
             />
-
             <SubmitButton loading={isSubmitting} label="CONFIRM ASSIGNMENT" />
           </form>
         </Modal>
@@ -485,7 +447,7 @@ export default function MetersModule() {
   );
 }
 
-// --- HELPER COMPONENTS ---
+// --- HELPERS (Preserved) ---
 function StatItem({ icon, label, value, color }) {
   const colors = {
     blue: "bg-blue-50 text-blue-600",
@@ -543,7 +505,7 @@ function InputField({ label, icon, type = "text", ...props }) {
         <input
           {...props}
           type={type}
-          className="w-full pl-12 pr-5 py-4 bg-neutral-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary/20 font-bold text-sm"
+          className="w-full pl-12 pr-5 py-4 bg-neutral-50 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary/10 font-bold text-sm"
         />
       </div>
     </div>
@@ -561,7 +523,7 @@ function SubmitButton({ loading, label }) {
         <Loader2 className="animate-spin" size={18} />
       ) : (
         <CheckCircle2 size={18} />
-      )}
+      )}{" "}
       {label}
     </button>
   );

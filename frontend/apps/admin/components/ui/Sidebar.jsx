@@ -25,7 +25,7 @@ export const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
         {/* Logo Section */}
         <div className="flex items-center gap-3 mb-10">
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center font-black text-xl italic shadow-lg shadow-primary/20">B</div>
-          <div className="font-black text-xl tracking-tighter">Biogrix<span className="text-primary text-xs ml-1 font-bold">HQ</span></div>
+          <div className="font-black text-xl tracking-tighter uppercase">Biogrix<span className="text-primary text-xs ml-1 font-bold">HQ</span></div>
         </div>
 
         {/* Nav Links */}

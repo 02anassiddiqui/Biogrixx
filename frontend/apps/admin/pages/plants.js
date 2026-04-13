@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiRequest } from "../services/api"; // ✅ Professional Wrapper Import
 import {
   Factory,
   MapPin,
@@ -11,7 +12,7 @@ import {
   AlertTriangle,
   X,
   RotateCcw,
-  UserCheck, // Added icon for installer
+  UserCheck,
 } from "lucide-react";
 
 export default function PlantsModule() {
@@ -26,23 +27,15 @@ export default function PlantsModule() {
     name: "",
     village_name: "",
     capacity: "",
-    installer_name: "", // ✅ Initialized
+    installer_name: "",
     status: "active",
   });
 
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/v1";
-
-  // --- 1. Fetch Plants Data ---
+  // --- 1. Fetch Plants Data (Professional Way) ---
   const fetchPlants = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/plants`, {
-        headers: {
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-        },
-      });
-      const result = await response.json();
+      const result = await apiRequest("/plants");
       if (result.success) setPlants(result.data);
     } catch (error) {
       console.error("Fetch error:", error);
@@ -60,15 +53,12 @@ export default function PlantsModule() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/plants/register`, {
+      // ✅ apiRequest handles headers and JSON.stringify automatic
+      const result = await apiRequest("/plants/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-        },
-        body: JSON.stringify(newPlant),
+        body: newPlant,
       });
-      const result = await response.json();
+
       if (result.success) {
         setShowAddForm(false);
         setNewPlant({
@@ -90,13 +80,9 @@ export default function PlantsModule() {
   // --- 3. Delete Logic ---
   const handleDecommission = async (id) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/plants/${id}`, {
+      const result = await apiRequest(`/plants/${id}`, {
         method: "DELETE",
-        headers: {
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-        },
       });
-      const result = await response.json();
       if (result.success) {
         setPlants(plants.filter((p) => p.id !== id));
         setConfirmingId(null);
@@ -109,15 +95,10 @@ export default function PlantsModule() {
   // --- 4. Update Status ---
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/plants/${id}/status`, {
+      const result = await apiRequest(`/plants/${id}/status`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-        },
-        body: JSON.stringify({ status: newStatus }),
+        body: { status: newStatus },
       });
-      const result = await response.json();
       if (result.success) {
         setPlants(
           plants.map((p) => (p.id === id ? { ...p, status: newStatus } : p)),
@@ -187,7 +168,7 @@ export default function PlantsModule() {
                 <tr className="bg-neutral-50 text-neutral-500 text-xs font-bold border-b border-neutral-100">
                   <th className="px-8 py-5">Unit Designation</th>
                   <th className="px-8 py-5">Village Hub</th>
-                  <th className="px-8 py-5">Installer</th> {/* ✅ New Header */}
+                  <th className="px-8 py-5">Installer</th>
                   <th className="px-8 py-5">Capacity</th>
                   <th className="px-8 py-5">Status</th>
                   <th className="px-8 py-5 text-right">Actions</th>
@@ -201,8 +182,6 @@ export default function PlantsModule() {
                   >
                     {confirmingId === plant.id ? (
                       <td colSpan="6" className="px-8 py-4">
-                        {" "}
-                        {/* ✅ colSpan updated to 6 */}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3 text-red-600 font-bold text-sm">
                             <AlertTriangle size={18} />
@@ -248,8 +227,7 @@ export default function PlantsModule() {
                           </div>
                         </td>
                         <td className="px-8 py-6 italic text-sm text-neutral-500 font-medium">
-                          {plant.installer_name || "Self-Install"}{" "}
-                          {/* ✅ New Data Cell */}
+                          {plant.installer_name || "Self-Install"}
                         </td>
                         <td className="px-8 py-6 font-bold text-sm text-neutral-900">
                           {plant.capacity}{" "}
@@ -369,7 +347,6 @@ export default function PlantsModule() {
                 />
               </div>
 
-              {/* ✅ Added Installer Name Input */}
               <div className="space-y-2">
                 <label className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
                   Lead Installer / Entity

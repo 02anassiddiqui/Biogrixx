@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router(); 
 const meterController = require("./meters.controller");
-const { authGuard } = require("../../middleware/auth");
+const { authGuard } = require("../../middleware/authMiddleware");
 
 // --- 🔓 OPEN ROUTES (For Agent UI) ---
 // Agent ko saare active meters dekhne ki permission honi chahiye

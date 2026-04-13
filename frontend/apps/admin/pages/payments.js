@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { apiRequest } from "../services/api";
 import { 
   Search, 
   IndianRupee, 
@@ -19,13 +20,9 @@ export default function PaymentLedger() {
   const fetchLedger = async () => {
     setLoading(true);
     try {
-      // ✅ Fetching from our new Ledger API
-      const res = await fetch(`${API_BASE_URL}/payments/ledger`, {
-        headers: { "x-admin-secret": localStorage.getItem("biogrix_admin_key") },
-      });
-      const result = await res.json();
-      if (result.success) {
-        setTransactions(result.data);
+      const res = await apiRequest("/payments/ledger");
+      if (res.success) {
+        setTransactions(res.data);
       }
     } catch (err) {
       console.error("Ledger fetch failed:", err);

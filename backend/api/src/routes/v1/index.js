@@ -16,6 +16,7 @@ const paymentsRoutes = require('../../modules/payments/payments.routes')
 const complaintsRoutes = require('../../modules/complaints/complaints.routes')
 const maintenanceRoutes = require('../../modules/maintenance/maintenance.routes')
 const reportsRoutes = require('../../modules/reports/reports.routes')
+const aiRoutes = require("../../modules/ai/ai.routes");
 
 router.use('/health', healthRoutes)
 router.use('/customers', customersRoutes)
@@ -27,5 +28,6 @@ router.use('/payments', paymentsRoutes)
 router.use('/complaints', complaintsRoutes)
 router.use('/maintenance', maintenanceRoutes)
 router.use('/reports', reportsRoutes)
+router.use("/ai", aiRoutes); 
 
 module.exports = router

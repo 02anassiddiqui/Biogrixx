@@ -6,7 +6,7 @@ const express = require('express');
 const router = express.Router();
 const leadsController = require('./leads.controller');
 const { createLeadSchema } = require('./leads.validation');
-const { authGuard } = require('../../middleware/auth'); // 👈 1. Auth Guard import kiya
+const { authGuard } = require('../../middleware/authMiddleware'); // 👈 1. Auth Guard import kiya
 
 // Middleware function: Jo data check karega
 const validate = (schema) => (req, res, next) => {

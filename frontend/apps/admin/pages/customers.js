@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiRequest } from "../services/api";
 import {
   Users,
   MapPin,
@@ -21,6 +22,19 @@ export default function CustomersModule() {
   const API_BASE_URL =
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/v1";
 
+  // --- 1. Fetch Customers Data ---
+  const fetchCustomers = async () => {
+    setLoading(true);
+    try {
+      const result = await apiRequest("/customers");
+      if (result.success) setCustomers(result.data);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // --- ✅ NEW: DELETE LOGIC ---
   const handleDeleteCustomer = async (id) => {
     if (
@@ -34,7 +48,7 @@ export default function CustomersModule() {
       const response = await fetch(`${API_BASE_URL}/customers/${id}`, {
         method: "DELETE",
         headers: {
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
+          "x-admin-secret": localStorage.getItem("biogrix_auth_token"),
         },
       });
       const result = await response.json();
@@ -46,24 +60,6 @@ export default function CustomersModule() {
       }
     } catch (error) {
       console.error("Delete failed:", error);
-    }
-  };
-
-  // --- 1. Fetch Customers Data ---
-  const fetchCustomers = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/customers`, {
-        headers: {
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-        },
-      });
-      const result = await response.json();
-      if (result.success) setCustomers(result.data);
-    } catch (error) {
-      console.error("Fetch error:", error);
-    } finally {
-      setLoading(false);
     }
   };
 

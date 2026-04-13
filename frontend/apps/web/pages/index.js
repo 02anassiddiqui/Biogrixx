@@ -3,6 +3,7 @@ import { Container } from "../components/ui/Container";
 import { Section } from "../components/ui/Section";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
+import Trans from "../components/ui/Trans"; // 🚀 Import Trans Component
 import {
   Flame,
   Zap,
@@ -24,12 +25,20 @@ import {
   FileText,
   ArrowDown,
 } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function Home() {
+  const { lang } = useLanguage();
   return (
     <>
       <Head>
-        <title>Biogrix | Clean Energy for Every Village</title>
+        {/* ✅ FIXED: Title mein component nahi, string use karein */}
+        <title>
+          {lang === "Hindi"
+            ? "Biogrix | हर गाँव के लिए स्वच्छ ऊर्जा" :
+            lang === "Gujarati" ? "Biogrix | દરેક ગામ માટે સ્વચ્છ ઉર્જા":
+            "Biogrix | Clean Energy for Every Village"}
+        </title>
         <meta
           name="description"
           content="Manage your village biogas network easily with Biogrix."
@@ -43,18 +52,20 @@ export default function Home() {
           <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-emerald-100 text-emerald-700 text-sm font-bold mb-8 shadow-sm">
               <CheckCircle2 size={16} className="text-primary" />
-              Trusted by 50+ Regional Bio-Plants
+              <Trans>Trusted by 50+ Regional Bio-Plants</Trans>
             </div>
             <h1 className="text-5xl md:text-7xl font-black text-neutral-900 leading-[0.9] tracking-tighter mb-8">
-              Turn Cow Dung <br />
+              <Trans>Turn Cow Dung</Trans> <br />
               <span className="text-transparent italic bg-clip-text bg-gradient-to-r from-primary to-emerald-600">
-                Into Cooking Gas for Your Village.
+                <Trans>Into Cooking Gas for Your Village.</Trans>
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-neutral-600 mb-10 leading-relaxed max-w-2xl">
-              Biogrix Run your village gas network, streamlines gas
-              distribution, track usage, automates household billing, and
-              optimizes plant operations—all in one powerful platform.
+              <Trans>
+                Biogrix Run your village gas network, streamlines gas
+                distribution, track usage, automates household billing, and
+                optimizes plant operations—all in one powerful platform.
+              </Trans>
             </p>
             <div className="flex flex-col sm:flex-row gap-5 items-center justify-center w-full">
               <Button
@@ -62,7 +73,7 @@ export default function Home() {
                 variant="primary"
                 className="h-16 px-10 text-lg w-full sm:w-auto group"
               >
-                See How Biogrix Works
+                <Trans>See How Biogrix Works</Trans>
                 <ArrowRight
                   className="ml-2 transition-transform group-hover:translate-x-1"
                   size={20}
@@ -73,7 +84,7 @@ export default function Home() {
                 variant="secondary"
                 className="h-16 px-10 text-lg w-full sm:w-auto group bg-white/50 backdrop-blur-sm"
               >
-                Calculator
+                <Trans>Calculator</Trans>
                 <ArrowRight
                   className="ml-2 transition-transform group-hover:translate-x-1"
                   size={20}
@@ -83,29 +94,6 @@ export default function Home() {
           </div>
         </Container>
       </Section>
-
-      {/* --- STATS BAR --- */}
-      {/* <div className="bg-neutral-900 py-12">
-        <Container>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              { label: "Families Cooking", value: "8,000+" },
-              { label: "Village Networks", value: "50+" },
-              { label: "Success Rate", value: "99.9%" },
-              { label: "Daily Gas Saved", value: "25k m³" },
-            ].map((stat, i) => (
-              <div key={i}>
-                <div className="text-3xl font-bold text-white mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-neutral-500 text-xs font-bold uppercase tracking-widest">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </div> */}
 
       {/* --- SAVINGS HIGHLIGHT --- */}
       <Section
@@ -130,39 +118,41 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-white space-y-6">
               <h2 className="text-4xl md:text-5xl font-black leading-tight tracking-tight">
-                Stop Spending Heavily <br /> on LPG Cylinders.
+                <Trans>Stop Spending Heavily on LPG Cylinders.</Trans>
               </h2>
               <p className="text-emerald-50 text-lg opacity-90 leading-relaxed">
-                Producing your own gas is cheaper than buying cylinders. It
-                saves money for a family of 4–5 members and keeps your kitchen
-                smoke-free.
+                <Trans>
+                  Producing your own gas is cheaper than buying cylinders. It
+                  saves money for a family of 4–5 members and keeps your kitchen
+                  smoke-free.
+                </Trans>
               </p>
               <div className="flex items-center gap-4 py-4">
                 <div className="h-12 w-1 bg-white/30 rounded-full" />
                 <p className="text-emerald-100 font-bold uppercase text-xs tracking-widest">
-                  Low Cost. High Production. Zero Smoke.
+                  <Trans>Low Cost. High Production. Zero Smoke.</Trans>
                 </p>
               </div>
             </div>
             <div className="relative">
               <Card className="bg-white p-10 md:p-12 rounded-[3rem] shadow-2xl relative z-10 text-center border-none">
                 <p className="text-neutral-500 font-bold uppercase tracking-widest text-xs mb-4">
-                  Monthly Family Savings
+                  <Trans>Monthly Family Savings</Trans>
                 </p>
                 <div className="text-6xl md:text-7xl font-black text-neutral-900 tracking-tighter mb-4">
                   ₹600{" "}
                   <span className="text-2xl tracking-tighter font-bold">
-                    to
+                    <Trans>to</Trans>
                   </span>{" "}
                   ₹1200
                 </div>
                 <p className="text-primary font-black text-lg mb-8 uppercase tracking-tight">
-                  Per Month / Per Family
+                  <Trans>Per Month / Per Family</Trans>
                 </p>
                 <div className="pt-8 border-t border-neutral-100 flex flex-col gap-4">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-neutral-500 font-medium">
-                      LPG Cylinder Price
+                      <Trans>LPG Cylinder Price</Trans>
                     </span>
                     <span className="text-red-500 font-bold line-through">
                       ₹1100+
@@ -170,7 +160,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-neutral-500 font-medium">
-                      Biogas Cost
+                      <Trans>Biogas Cost</Trans>
                     </span>
                     <span className="text-primary font-bold">~₹400-500</span>
                   </div>
@@ -187,7 +177,7 @@ export default function Home() {
         <Container>
           <div className="text-center mb-16">
             <h3 className="text-4xl font-black text-neutral-900">
-              Who can start a Biogrix system?
+              <Trans>Who can start a Biogrix system?</Trans>
             </h3>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
@@ -196,10 +186,14 @@ export default function Home() {
               className="p-8 border-none shadow-sm hover:shadow-xl bg-white transition-all"
             >
               <Truck className="text-primary mb-6" size={32} />
-              <h4 className="text-xl font-bold mb-2">Cow Owners</h4>
+              <h4 className="text-xl font-bold mb-2">
+                <Trans>Cow Owners</Trans>
+              </h4>
               <p className="text-neutral-500 text-sm">
-                Turn cow dung into monthly cash. Use what you need and sell the
-                extra gas to your neighbors.
+                <Trans>
+                  Turn cow dung into monthly cash. Use what you need and sell
+                  the extra gas to your neighbors.
+                </Trans>
               </p>
             </Card>
             <Card
@@ -207,10 +201,14 @@ export default function Home() {
               className="p-8 border-none shadow-sm hover:shadow-xl bg-white transition-all"
             >
               <Wallet className="text-emerald-500 mb-6" size={32} />
-              <h4 className="text-xl font-bold mb-2">Local Operators</h4>
+              <h4 className="text-xl font-bold mb-2">
+                <Trans>Local Operators</Trans>
+              </h4>
               <p className="text-neutral-500 text-sm">
-                Start a small business in your village. Manage gas meters and
-                collect payments easily through your phone.
+                <Trans>
+                  Start a small business in your village. Manage gas meters and
+                  collect payments easily through your phone.
+                </Trans>
               </p>
             </Card>
             <Card
@@ -218,25 +216,29 @@ export default function Home() {
               className="p-8 border-none shadow-sm hover:shadow-xl bg-white transition-all"
             >
               <Shield className="text-blue-500 mb-6" size={32} />
-              <h4 className="text-xl font-bold mb-2">Community Groups</h4>
+              <h4 className="text-xl font-bold mb-2">
+                <Trans>Community Groups</Trans>
+              </h4>
               <p className="text-neutral-500 text-sm">
-                Help your village become self-reliant. Reduce fuel costs and
-                provide clean energy to every household.
+                <Trans>
+                  Help your village become self-reliant. Reduce fuel costs and
+                  provide clean energy to every household.
+                </Trans>
               </p>
             </Card>
           </div>
         </Container>
       </Section>
 
-      {/* --- 🚀 NEW SECTION 1: HOW IT WORKS FLOW --- */}
+      {/* --- HOW IT WORKS FLOW --- */}
       <Section className="bg-white py-24 border-t border-neutral-100">
         <Container>
           <div className="text-center mb-16">
             <h2 className="text-primary font-bold uppercase tracking-widest text-sm mb-4">
-              The Process
+              <Trans>The Process</Trans>
             </h2>
             <h3 className="text-4xl font-black text-neutral-900">
-              How it works in 4 simple steps
+              <Trans>How it works in 4 simple steps</Trans>
             </h3>
           </div>
 
@@ -264,27 +266,23 @@ export default function Home() {
               },
             ].map((step, i) => (
               <div key={i} className="relative flex flex-col items-center">
-                {/* Step Card */}
                 <div className="flex flex-col items-center text-center group w-full">
                   <div className="w-20 h-20 rounded-[2rem] bg-emerald-50 flex items-center justify-center text-emerald-600 mb-6 group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-sm group-hover:shadow-xl group-hover:-translate-y-2">
                     {step.icon}
                   </div>
                   <h4 className="text-lg font-black text-neutral-900 mb-2 tracking-tight">
-                    {step.title}
+                    <Trans>{step.title}</Trans>
                   </h4>
                   <p className="text-neutral-500 text-sm px-4 leading-relaxed font-medium">
-                    {step.desc}
+                    <Trans>{step.desc}</Trans>
                   </p>
                 </div>
 
-                {/* 🏹 Arrows for Section 1 */}
                 {i < 3 && (
                   <>
-                    {/* Desktop: Right Arrow */}
                     <div className="hidden md:block absolute top-10 -right-4 text-emerald-200">
                       <ArrowRight size={24} strokeWidth={3} />
                     </div>
-                    {/* Mobile: Down Arrow */}
                     <div className="md:hidden flex justify-center my-6 text-emerald-200">
                       <ArrowDown size={24} strokeWidth={3} />
                     </div>
@@ -296,19 +294,21 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* --- 🚀 NEW SECTION 2: SYSTEM DIAGRAM --- */}
+      {/* --- SYSTEM DIAGRAM --- */}
       <Section className="bg-white py-24 border-t border-neutral-100">
         <Container>
           <div className="text-center mb-20">
             <h2 className="text-primary font-bold uppercase tracking-widest text-sm mb-4">
-              Infrastructure
+              <Trans>Infrastructure</Trans>
             </h2>
             <h3 className="text-4xl font-black text-neutral-900 leading-tight">
-              Technical Setup: Cow Dung to Cooking Gas
+              <Trans>Technical Setup: Cow Dung to Cooking Gas</Trans>
             </h3>
             <p className="text-neutral-500 font-medium mt-4 max-w-2xl mx-auto">
-              Our digital infrastructure connects every point of your village
-              gas network seamlessly.
+              <Trans>
+                Our digital infrastructure connects every point of your village
+                gas network seamlessly.
+              </Trans>
             </p>
           </div>
 
@@ -346,21 +346,18 @@ export default function Home() {
                     {item.icon}
                   </div>
                   <h4 className="text-lg font-black text-neutral-900 mb-1 tracking-tight">
-                    {item.label}
+                    <Trans>{item.label}</Trans>
                   </h4>
                   <p className="text-neutral-400 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
-                    {item.sub}
+                    <Trans>{item.sub}</Trans>
                   </p>
                 </div>
 
-                {/* 🏹 Arrows for Section 2 */}
                 {i < 4 && (
                   <>
-                    {/* Desktop: Right Arrow */}
                     <div className="hidden md:block absolute top-10 -right-4 text-emerald-200">
                       <ArrowRight size={20} strokeWidth={3} />
                     </div>
-                    {/* Mobile: Down Arrow */}
                     <div className="md:hidden flex justify-center my-6 text-emerald-200">
                       <ArrowDown size={20} strokeWidth={3} />
                     </div>
@@ -373,7 +370,7 @@ export default function Home() {
           <div className="mt-20 pt-8 border-t border-neutral-50 flex items-center justify-center gap-3">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em]">
-              Real-time Infrastructure Monitoring Active
+              <Trans>Real-time Infrastructure Monitoring Active</Trans>
             </p>
           </div>
         </Container>
@@ -384,12 +381,10 @@ export default function Home() {
         <Container>
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-primary font-bold tracking-tight uppercase mb-3 text-sm">
-              {" "}
-              {/* text-sm tracking-[0.2em] */}
-              Simple Tools
+              <Trans>Simple Tools</Trans>
             </h2>
             <h3 className="text-3xl md:text-4xl font-bold text-neutral-900">
-              Easy to use for every village operator.
+              <Trans>Easy to use for every village operator.</Trans>
             </h3>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
@@ -398,10 +393,14 @@ export default function Home() {
               className="p-8 border-none bg-neutral-50 hover:bg-white border-t-4 border-t-primary transition-all"
             >
               <Smartphone className="text-primary mb-6" size={32} />
-              <h4 className="text-xl font-bold mb-3">Easy Registration</h4>
+              <h4 className="text-xl font-bold mb-3">
+                <Trans>Easy Registration</Trans>
+              </h4>
               <p className="text-neutral-600 leading-relaxed text-sm">
-                Register a new family in seconds. No complex paperwork.
-                Everything is stored safely on your phone.
+                <Trans>
+                  Register a new family in seconds. No complex paperwork.
+                  Everything is stored safely on your phone.
+                </Trans>
               </p>
             </Card>
             <Card
@@ -409,10 +408,14 @@ export default function Home() {
               className="p-8 border-none bg-neutral-50 hover:bg-white border-t-4 border-t-emerald-500 transition-all"
             >
               <Zap className="text-emerald-500 mb-6" size={32} />
-              <h4 className="text-xl font-bold mb-3">Automatic Bills</h4>
+              <h4 className="text-xl font-bold mb-3">
+                <Trans>Automatic Bills</Trans>
+              </h4>
               <p className="text-neutral-600 leading-relaxed text-sm">
-                The system calculates the bill based on gas used. No mistakes,
-                no arguments—just fair and clear prices.
+                <Trans>
+                  The system calculates the bill based on gas used. No mistakes,
+                  no arguments—just fair and clear prices.
+                </Trans>
               </p>
             </Card>
             <Card
@@ -421,11 +424,13 @@ export default function Home() {
             >
               <Globe className="text-blue-500 mb-6" size={32} />
               <h4 className="text-xl font-bold mb-3">
-                See Daily Gas Production
+                <Trans>See Daily Gas Production</Trans>
               </h4>
               <p className="text-neutral-600 leading-relaxed text-sm">
-                See how much gas your plant is making daily. Know exactly when
-                you need more waste or maintenance.
+                <Trans>
+                  See how much gas your plant is making daily. Know exactly when
+                  you need more waste or maintenance.
+                </Trans>
               </p>
             </Card>
           </div>
@@ -433,20 +438,19 @@ export default function Home() {
       </Section>
 
       {/* --- THE BIOGRIX DIFFERENCE --- */}
-      <Section
-        dark
-        className="overflow-hidden"
-      >
+      <Section dark className="overflow-hidden">
         <Container>
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-6">
               <h2 className="text-4xl font-bold leading-tight">
-                Built for Reliable Village Life
+                <Trans>Built for Reliable Village Life</Trans>
               </h2>
               <p className="text-neutral-400 text-lg leading-relaxed">
-                We know that technology in villages must be simple and tough.
-                Biogrix is built to work every single day, even without a
-                constant internet connection.
+                <Trans>
+                  We know that technology in villages must be simple and tough.
+                  Biogrix is built to work every single day, even without a
+                  constant internet connection.
+                </Trans>
               </p>
               <ul className="space-y-6">
                 {[
@@ -469,9 +473,11 @@ export default function Home() {
                     </div>
                     <div>
                       <h5 className="font-bold text-white uppercase text-xs tracking-widest mb-1">
-                        {item.title}
+                        <Trans>{item.title}</Trans>
                       </h5>
-                      <p className="text-neutral-500 text-sm">{item.desc}</p>
+                      <p className="text-neutral-500 text-sm">
+                        <Trans>{item.desc}</Trans>
+                      </p>
                     </div>
                   </li>
                 ))}
@@ -481,15 +487,20 @@ export default function Home() {
               <div className="bg-neutral-950 rounded-[1.8rem] p-8 md:p-12 text-center">
                 <Flame className="text-primary mx-auto mb-6" size={48} />
                 <blockquote className="text-xl font-medium text-neutral-300 mb-8 leading-relaxed italic">
-                  "Biogrix made it easy for us to sell gas to 20 houses nearby.
-                  We now have a fixed monthly income from our dairy farm waste."
+                  "
+                  <Trans>
+                    Biogrix made it easy for us to sell gas to 20 houses nearby.
+                    We now have a fixed monthly income from our dairy farm
+                    waste.
+                  </Trans>
+                  "
                 </blockquote>
                 <div className="space-y-1 text-center">
                   <p className="font-bold text-white text-lg tracking-tight uppercase">
-                    Ramesh Patel, Dairy Farmer
+                    <Trans>Ramesh Patel, Dairy Farmer</Trans>
                   </p>
                   <p className="text-neutral-500 uppercase tracking-[0.2em] text-[10px] font-bold">
-                    Gujarat Region
+                    <Trans>Gujarat Region</Trans>
                   </p>
                 </div>
               </div>
@@ -517,11 +528,14 @@ export default function Home() {
               </svg>
             </div>
             <h2 className="text-4xl md:text-6xl font-black text-white mb-8 relative tracking-tight leading-none">
-              Stop Buying Gas Cylinders. <br /> Start Producing Your Own Biogas.
+              <Trans>Stop Buying Gas Cylinders.</Trans> <br />{" "}
+              <Trans>Start Producing Your Own Biogas.</Trans>
             </h2>
             <p className="text-emerald-50 text-xl mb-12 max-w-xl mx-auto relative font-medium">
-              Start your own community gas grid today. Works for 3–50
-              households. Contact us for a free survey of your location.
+              <Trans>
+                Start your own community gas grid today. Works for 3–50
+                households. Contact us for a free survey of your location.
+              </Trans>
             </p>
             <div className="flex flex-col sm:flex-row gap-5 justify-center relative">
               <Button
@@ -529,14 +543,14 @@ export default function Home() {
                 variant="white"
                 className="h-16 px-12 text-lg shadow-xl font-bold"
               >
-                See About Us
+                <Trans>See About Us</Trans>
               </Button>
               <Button
                 href="/how-it-works"
                 variant="black"
                 className="h-16 px-12 text-lg font-bold"
               >
-                See How We Works
+                <Trans>See How We Works</Trans>
               </Button>
             </div>
           </div>

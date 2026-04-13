@@ -1,17 +1,21 @@
-exports.login = async (req, res) => {
-  const { password } = req.body;
-  const adminSecret = process.env.ADMIN_SECRET;
+const authService = require('./auth.service');
 
-  if (password === adminSecret) {
-    res.status(200).json({ 
-      success: true, 
-      message: "Login Successful",
-      token: adminSecret // Simple rakhte hain, wahi secret bhej rahe hain
-    });
-  } else {
-    res.status(401).json({ 
-      success: false, 
-      message: "Bhai, galat password hai!" 
-    });
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const token = await authService.login(email, password);
+    res.json({ success: true, token });
+  } catch (err) {
+    res.status(401).json({ success: false, message: err.message });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    await authService.changePassword(req.admin.id, oldPassword, newPassword);
+    res.json({ success: true, message: "Password updated successfully" });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
   }
 };

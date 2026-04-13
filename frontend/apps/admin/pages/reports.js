@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { apiRequest } from "../services/api";
 import {
   BarChart,
   Bar,
@@ -34,12 +35,7 @@ export default function ReportsModule() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/reports/summary`, {
-        headers: {
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-        },
-      });
-      const result = await res.json();
+      const result = await apiRequest("/reports/summary");
       if (result.success) {
         setData(result.data);
       } else {

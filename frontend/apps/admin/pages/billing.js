@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import autoTable from "jspdf-autotable";
+import { apiRequest } from "../services/api";
 import {
   Receipt,
   Search,
@@ -99,13 +100,8 @@ export default function BillingModule() {
   const fetchBills = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/billing`, {
-        headers: {
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
-        },
-      });
-      const result = await res.json();
-      if (result.success) setBills(result.data);
+      const res = await apiRequest("/billing");
+      if (res.success) setBills(res.data);
     } catch (err) {
       console.error("Billing fetch failed:", err);
     } finally {
@@ -136,7 +132,7 @@ export default function BillingModule() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-secret": localStorage.getItem("biogrix_admin_key"),
+          "x-admin-secret": localStorage.getItem("biogrix_auth_token"),
         },
         body: JSON.stringify(paymentData),
       });
