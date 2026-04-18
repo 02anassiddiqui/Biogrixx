@@ -1,5 +1,4 @@
 // backend/api/src/modules/gas-usage/gas-usage.repository.js
-
 const { supabase } = require("../../shared/database/supabaseClient");
 
 exports.createReading = async (data) => {
@@ -12,8 +11,9 @@ exports.createReading = async (data) => {
         customer_id: data.customer_id,
         previous_reading: data.previous_reading,
         current_reading: data.current_reading,
-        consumption: data.consumption, // ✅ Save math result
-        image_url: data.image_url,
+        consumption: data.consumption,
+        image_url: data.image_url, // 📸 Evidence Link
+        entered_by: data.entered_by, // 👷 Worker Identity
       },
     ])
     .select()
@@ -21,7 +21,7 @@ exports.createReading = async (data) => {
 
   if (usageError) throw usageError;
 
-  // 2. ⚡ Sync with Meter Table (Update last_reading)
+  // 2. ⚡ Sync with Meter Table
   const { error: meterError } = await supabase
     .from("meters")
     .update({
@@ -41,12 +41,24 @@ exports.findAll = async () => {
     .select(
       `
       *,
-      customers ( name, phone ),
-      meters ( serial_number )
+      customers ( 
+        name, 
+        phone,
+        villages ( name )
+      ),
+      meters ( 
+        serial_number 
+      ),
+      workers ( 
+        name 
+      ) 
     `,
     )
     .order("recorded_at", { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.error("❌ Fetch History Error:", error.message);
+    throw error;
+  }
   return data;
 };

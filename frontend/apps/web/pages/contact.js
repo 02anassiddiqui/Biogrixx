@@ -1,3 +1,4 @@
+// frontend/apps/web/contact.js
 import Head from "next/head";
 import { motion } from "framer-motion";
 import { Container } from "../components/ui/Container";
@@ -5,8 +6,8 @@ import { Section } from "../components/ui/Section";
 import { Button } from "../components/ui/Button";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import Trans from "../components/ui/Trans"; // 🚀 Import Trans
-import { useLanguage } from "../context/LanguageContext"; // 👈 Context hook
+import Trans from "../components/ui/Trans";
+import { useLanguage } from "../context/LanguageContext";
 import {
   Mail,
   Phone,
@@ -18,7 +19,7 @@ import {
 } from "lucide-react";
 
 export default function Contact() {
-  const { translate, lang } = useLanguage(); // 👈 Translate function for non-JSX strings
+  const { translate, lang } = useLanguage();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -32,22 +33,6 @@ export default function Contact() {
 
   const [loading, setLoading] = useState(false);
 
-  const errorStyle = {
-    background: "#DC2626",
-    color: "#fff",
-    fontWeight: "bold",
-    borderRadius: "12px",
-    fontSize: "14px",
-  };
-
-  const successStyle = {
-    background: "#16A34A",
-    color: "#fff",
-    fontWeight: "bold",
-    borderRadius: "12px",
-    fontSize: "14px",
-  };
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -55,57 +40,55 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const loadingToast = toast.loading("Submitting your inquiry...");
 
-    // --- 🛠️ STEP 1: VALIDATIONS (With Localized Toasts) ---
+    // --- 🛠️ STEP 1: VALIDATIONS ---
 
     if (!formData.name || formData.name.length < 3) {
-      const msg = await translate(
-        "Full Name is required (minimum 3 characters).",
-      );
-      toast.error(msg, { style: errorStyle });
+      toast.error("Full Name is required (minimum 3 characters).", {
+        id: loadingToast,
+      });
       setLoading(false);
       return;
     }
 
     if (!formData.phone || formData.phone.length < 10) {
-      const msg = await translate(
-        "Please enter a valid 10-digit phone number.",
-      );
-      toast.error(msg, { style: errorStyle });
+      toast.error("Please enter a valid 10-digit phone number.", {
+        id: loadingToast,
+      });
       setLoading(false);
       return;
     }
 
     if (!formData.village) {
-      const msg = await translate(
-        "Please provide your Village or Community name.",
-      );
-      toast.error(msg, { style: errorStyle });
+      toast.error("Please provide your Village or Community name.", {
+        id: loadingToast,
+      });
       setLoading(false);
       return;
     }
 
     if (!formData.location_details) {
-      const msg = await translate(
-        "District and State information is required.",
-      );
-      toast.error(msg, { style: errorStyle });
+      toast.error("District and State information is required.", {
+        id: loadingToast,
+      });
       setLoading(false);
       return;
     }
 
     if (!formData.livestock_count || parseInt(formData.livestock_count) <= 0) {
-      const msg = await translate("Please provide a valid livestock count.");
-      toast.error(msg, { style: errorStyle });
+      toast.error("Please provide a valid livestock count.", {
+        id: loadingToast,
+      });
       setLoading(false);
       return;
     }
 
     if (!formData.message || formData.message.length < 10) {
-      const msg = await translate(
+      toast.error(
         "Please provide at least 10 characters in Additional Details.",
+        { id: loadingToast },
       );
-      toast.error(msg, { style: errorStyle });
       setLoading(false);
       return;
     }
@@ -128,14 +111,9 @@ export default function Contact() {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        const successMsg = await translate(
-          "Success! Your project inquiry has been submitted.",
-        );
-        toast.success(successMsg, {
-          duration: 5000,
-          style: successStyle,
+        toast.success("Project inquiry submitted successfully!", {
+          id: loadingToast,
         });
-
         setFormData({
           name: "",
           phone: "",
@@ -149,8 +127,7 @@ export default function Contact() {
         throw new Error(result.message || "Server rejected the request.");
       }
     } catch (error) {
-      const errorMsg = (await translate("Request Failed: ")) + error.message;
-      toast.error(errorMsg, { style: errorStyle });
+      toast.error("Inquiry Failed: " + error.message, { id: loadingToast });
     } finally {
       setLoading(false);
     }
@@ -168,9 +145,9 @@ export default function Contact() {
         </title>
       </Head>
 
+      {/* Toaster uses global style from _app.js */}
       <Toaster />
 
-      {/* --- HERO SECTION --- */}
       <Section className="bg-white pt-24 pb-12">
         <Container>
           <motion.div
@@ -194,7 +171,6 @@ export default function Contact() {
         </Container>
       </Section>
 
-      {/* --- FORM SECTION --- */}
       <Section
         primary
         className="overflow-hidden relative bg-gradient-to-r from-primary to-emerald-600 py-16"
@@ -202,7 +178,6 @@ export default function Contact() {
         <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full blur-[80px] pointer-events-none" />
         <Container>
           <div className="grid lg:grid-cols-12 gap-12 items-start">
-            {/* FORM SIDE */}
             <form onSubmit={handleSubmit} className="lg:col-span-7 space-y-10">
               <div>
                 <h2 className="text-3xl font-black text-white tracking-tight">
@@ -347,7 +322,6 @@ export default function Contact() {
               </Button>
             </form>
 
-            {/* INFO PANEL */}
             <div className="lg:col-span-5 lg:pl-12 space-y-8 border-t lg:border-t-0 lg:border-l border-white/10 pt-8 lg:pt-0">
               <div className="space-y-8 text-white">
                 <div className="flex items-center gap-4">
@@ -395,7 +369,7 @@ export default function Contact() {
               <div className="p-5 bg-black/20 rounded-2xl border border-white/5 flex items-center gap-4">
                 <Clock className="text-primary shrink-0" size={24} />
                 <p className="text-xs text-emerald-100 font-medium">
-                  <Trans>Field Support Active.</Trans> <br />{" "}
+                  <Trans>Field Support Active.</Trans> <br />
                   <span className="font-bold text-white">
                     <Trans>Direct callback in 2 hours.</Trans>
                   </span>

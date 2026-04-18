@@ -1,3 +1,4 @@
+// frontend/pages/profile.js
 import { useState, useEffect, useRef } from "react";
 import { apiRequest } from "../services/api";
 import toast from "react-hot-toast";
@@ -15,9 +16,12 @@ import {
   ChevronRight,
   Activity,
   ShieldCheck,
+  Check,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
-// 🛠️ Keep existing Logic - Image Compression
+// 🛠️ Logic - Image Compression (Kept as is)
 const compressImage = (file) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -46,8 +50,7 @@ const compressImage = (file) => {
         canvas.height = height;
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, width, height);
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
-        resolve(dataUrl);
+        resolve(canvas.toDataURL("image/jpeg", 0.7));
       };
       img.onerror = (err) => reject(err);
     };
@@ -83,7 +86,7 @@ export default function ProfileModule({ onExit }) {
           setGstValue(res.data.gst_percentage || 18);
         }
       } catch (err) {
-        toast.error("Core sync failed.");
+        toast.error("Profile sync offline.");
       } finally {
         setLoading(false);
       }
@@ -91,85 +94,123 @@ export default function ProfileModule({ onExit }) {
     loadProfile();
   }, []);
 
-  const handleImageClick = () => fileInputRef.current.click();
-
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
+      const loadToast = toast.loading("Optimizing identity photo...");
       try {
         const compressedBase64 = await compressImage(file);
         setProfile((prev) => ({ ...prev, profile_image: compressedBase64 }));
-        toast.success("Photo optimized!");
+        toast.success("Photo optimized.", { id: loadToast });
       } catch (err) {
-        toast.error("Process failed.");
+        toast.error("Process failed.", { id: loadToast });
       }
     }
   };
 
   const handleFinalSave = async () => {
+    const loadToast = toast.loading("Syncing credentials...");
     setSaving(true);
     try {
       if (activeSubTab === "edit-profile") {
-        const cleanData = {
-          name: profile.name,
-          email: profile.email,
-          profile_image: profile.profile_image,
-        };
         await apiRequest("/profile/update", {
           method: "PATCH",
-          body: cleanData,
+          body: {
+            name: profile.name,
+            email: profile.email,
+            profile_image: profile.profile_image,
+          },
         });
-        toast.success("Identity synchronized.");
+        toast.success("Identity updated.", { id: loadToast });
       }
       if (activeSubTab === "password") {
         if (passwords.new !== passwords.confirm)
-          throw new Error("Mismatch detected.");
+          throw new Error("Key mismatch detected.");
         await apiRequest("/profile/password", {
           method: "PATCH",
           body: { currentPassword: passwords.old, newPassword: passwords.new },
         });
-        toast.success("Passkey updated.");
+        toast.success("Security keys rotated.", { id: loadToast });
         setPasswords({ old: "", new: "", confirm: "" });
       }
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message || "Synchronization failed.", { id: loadToast });
     } finally {
       setSaving(false);
     }
   };
 
   const handleGSTUpdate = async () => {
+    const loadToast = toast.loading("Updating tax grid...");
     try {
       await apiRequest("/profile/gst", {
         method: "PATCH",
         body: { gst: Number(gstValue) },
       });
-      toast.success(`Tax grid updated: ${gstValue}%`);
+      toast.success(`GST set to ${gstValue}%`, { id: loadToast });
       setShowGSTPopup(false);
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message, { id: loadToast });
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!window.confirm("CRITICAL: Terminate account?")) return;
-    try {
-      await apiRequest("/profile/terminate", { method: "DELETE" });
-      window.location.href = "/login";
-    } catch (err) {
-      toast.error(err.message);
-    }
+  const confirmTerminate = () => {
+    toast.custom(
+      (t) => (
+        <div
+          className={`${t.visible ? "animate-in fade-in zoom-in-95" : "animate-out fade-out zoom-out-95"} max-w-sm w-full bg-zinc-900 border border-white/10 shadow-2xl rounded-[2rem] p-6 flex flex-col`}
+        >
+          <div className="flex items-start gap-4">
+            <div className="bg-red-500/10 p-3 rounded-2xl text-red-500">
+              <ShieldAlert size={24} />
+            </div>
+            <div>
+              <h3 className="text-white font-black text-lg tracking-tight uppercase">
+                Terminate Root?
+              </h3>
+              <p className="text-zinc-400 text-[11px] mt-1 leading-relaxed">
+                This will permanently purge your digital signature from the
+                system.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-3 mt-6">
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id);
+                try {
+                  await apiRequest("/profile/terminate", { method: "DELETE" });
+                  window.location.href = "/login";
+                } catch (e) {
+                  toast.error("Action denied.");
+                }
+              }}
+              className="flex-1 bg-red-500 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-red-600 transition-all"
+            >
+              Confirm
+            </button>
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="flex-1 bg-zinc-800 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-zinc-700 transition-all"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      { position: "top-center" },
+    );
   };
 
   if (loading)
     return (
       <div className="fixed inset-0 bg-white z-[200] flex items-center justify-center">
-        <Loader2 className="animate-spin text-emerald-600" size={48} />
+        <Loader2 className="animate-spin text-primary" size={40} />
       </div>
     );
 
   return (
-    <div className="fixed inset-0 z-[150] bg-slate-50 flex flex-col animate-in fade-in duration-300 font-sans selection:bg-emerald-100">
+    <div className="fixed inset-0 z-[150] bg-zinc-50 flex flex-col animate-in fade-in duration-500 selection:bg-primary/10">
       <input
         type="file"
         ref={fileInputRef}
@@ -178,156 +219,149 @@ export default function ProfileModule({ onExit }) {
         className="hidden"
       />
 
-      {/* --- PREMIUM TOP BAR --- */}
-      <nav className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 sticky top-0 z-50 shadow-sm">
-        <div className="flex items-center gap-6">
-          <div className="bg-primary p-2 rounded-xl">
-            <Activity className="text-white" size={20} />
+      {/* --- TOP NAVIGATION --- */}
+      <nav className="h-20 bg-white border-b border-zinc-200 flex items-center justify-between px-12 shrink-0 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-zinc-900 rounded-xl flex items-center justify-center text-white shadow-lg">
+            <Activity size={20} />
           </div>
           <div>
-            <h2 className="text-lg font-black tracking-tight text-slate-900 uppercase">
-              Control <span className="text-primary">Profile</span>
+            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-900">
+              Admin <span className="text-primary">Console</span>
             </h2>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">
-              Management Core / v2.1
+            <p className="text-[9px] font-black text-zinc-400 uppercase tracking-[0.3em]">
+              Management Node
             </p>
           </div>
         </div>
         <button
           onClick={onExit}
-          className="group uppercase flex items-center gap-3 px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-black hover:bg-primary transition-all active:scale-95 shadow-xl shadow-slate-200"
+          className="flex items-center gap-2 px-6 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-600 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
         >
-          <X size={16} className="group-hover:rotate-90 transition-transform" />{" "}
-          Exit Profile
+          <X size={14} /> Exit System
         </button>
       </nav>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* --- LEFT NAVIGATION --- */}
-        <aside className="w-80 bg-white border-r border-slate-200 p-8 space-y-3 overflow-y-auto">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 px-4">
-            Primary Settings
+        {/* --- LEFT SIDEBAR --- */}
+        <aside className="w-80 bg-white border-r border-zinc-200 p-10 space-y-2 shrink-0">
+          <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-8">
+            System Configuration
           </p>
           <SubTabBtn
             active={activeSubTab === "edit-profile"}
             onClick={() => setActiveSubTab("edit-profile")}
             icon={<User size={18} />}
-            label="Profile"
+            label="Identity"
           />
           <SubTabBtn
             active={false}
             onClick={() => setShowGSTPopup(true)}
             icon={<Percent size={18} />}
-            label="Taxation/GST Grid"
+            label="Taxation Grid"
           />
           <SubTabBtn
             active={activeSubTab === "password"}
             onClick={() => setActiveSubTab("password")}
             icon={<KeyRound size={18} />}
-            label="Password"
+            label="Security Keys"
           />
 
-          <div className="pt-8 mt-8 border-t border-slate-100">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 px-4">
-              Danger Zone
-            </p>
+          <div className="pt-8 mt-8 border-t border-zinc-100">
             <SubTabBtn
               active={activeSubTab === "delete"}
               onClick={() => setActiveSubTab("delete")}
               icon={<Trash2 size={18} />}
-              label="Delete Account"
+              label="Purge Account"
               danger
             />
           </div>
         </aside>
 
         {/* --- MAIN WORKSPACE --- */}
-        <main className="flex-1 p-16 overflow-y-auto bg-[#FDFDFD]">
+        <main className="flex-1 p-20 overflow-y-auto bg-white/40">
           <div className="max-w-3xl mx-auto">
             {activeSubTab === "edit-profile" && (
-              <div className="space-y-12 animate-in slide-in-from-bottom-6 duration-500">
+              <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-12">
                 <div className="flex items-center gap-10">
                   <div
-                    onClick={handleImageClick}
-                    className="group w-40 h-40 rounded-[3rem] bg-white border-2 border-slate-100 shadow-2xl flex items-center justify-center relative overflow-hidden cursor-pointer hover:border-primary transition-all ring-8 ring-slate-50"
+                    onClick={() => fileInputRef.current.click()}
+                    className="group relative w-32 h-32 rounded-[2.5rem] bg-white border-4 border-zinc-100 shadow-2xl overflow-hidden cursor-pointer transition-all hover:scale-105"
                   >
                     {profile.profile_image ? (
                       <img
                         src={profile.profile_image}
-                        className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all"
-                        alt="Profile"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="text-slate-200">
-                        <User size={64} />
+                      <div className="w-full h-full flex items-center justify-center text-zinc-200">
+                        <User size={48} />
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-primary/80 opacity-0 group-hover:opacity-100 transition-all flex flex-col items-center justify-center text-white backdrop-blur-sm">
-                      <Camera size={28} />
-                      <span className="text-[10px] font-black mt-2 uppercase tracking-tighter">
-                        Upload New
-                      </span>
+                    <div className="absolute inset-0 bg-zinc-900/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white backdrop-blur-sm">
+                      <Camera size={24} />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">
+                  <div className="space-y-1">
+                    <h3 className="text-4xl font-black text-zinc-900 tracking-tighter uppercase">
                       Administrator
                     </h3>
-                    <p className="text-slate-400 font-bold text-sm tracking-tight flex items-center gap-2">
-                      <ShieldCheck size={16} className="text-primary" />{" "}
-                      Authorized Biogrix Personnel
+                    <p className="text-zinc-400 text-sm font-bold flex items-center gap-2 tracking-tight uppercase">
+                      <ShieldCheck size={14} className="text-primary" />{" "}
+                      Verified Biogrix Root Access
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+                <div className="grid grid-cols-2 gap-10 pt-6">
                   <InputField
-                    label="Full Access Name"
+                    label="Admin Designation"
                     value={profile.name}
                     onChange={(v) => setProfile({ ...profile, name: v })}
                     placeholder="Master Admin"
                   />
                   <InputField
-                    label="Registered Email"
+                    label="System Email"
                     value={profile.email}
                     onChange={(v) => setProfile({ ...profile, email: v })}
-                    placeholder="root@biogrix.com"
+                    placeholder="admin@biogrix.com"
                   />
                 </div>
               </div>
             )}
 
             {activeSubTab === "password" && (
-              <div className="space-y-12 animate-in slide-in-from-bottom-6 duration-500">
-                <div className="space-y-2">
-                  <h3 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">
-                    Security Grid
-                  </h3>
-                  <p className="text-slate-400 font-bold">
-                    Manage encrypted access credentials.
-                  </p>
-                </div>
-                <div className="grid gap-8 pt-4">
+              <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-10">
+                <h3 className="text-4xl font-black text-zinc-900 tracking-tighter uppercase">
+                  Access Encryption
+                </h3>
+                <div className="grid gap-10">
+                  {/* 🚀 EYE ICON added here in 'old password' field */}
                   <InputField
                     type="password"
-                    label="Verification Current Passkey"
+                    allowToggle
+                    label="Current Security Key"
                     value={passwords.old}
                     onChange={(v) => setPasswords({ ...passwords, old: v })}
+                    placeholder="••••••••"
                   />
-                  <div className="grid grid-cols-2 gap-8">
+
+                  <div className="grid grid-cols-2 gap-10">
                     <InputField
                       type="password"
                       label="New Security Key"
                       value={passwords.new}
                       onChange={(v) => setPasswords({ ...passwords, new: v })}
+                      placeholder="••••••••"
                     />
                     <InputField
                       type="password"
-                      label="Confirm New Key"
+                      label="Verify Key"
                       value={passwords.confirm}
                       onChange={(v) =>
                         setPasswords({ ...passwords, confirm: v })
                       }
+                      placeholder="••••••••"
                     />
                   </div>
                 </div>
@@ -335,148 +369,78 @@ export default function ProfileModule({ onExit }) {
             )}
 
             {activeSubTab === "delete" && (
-              <div className="bg-white p-16 rounded-[4rem] border-2 border-red-50 shadow-2xl shadow-red-100 space-y-8 animate-in zoom-in-95 duration-500 text-center">
-                <div className="w-24 h-24 bg-red-50 rounded-[2rem] flex items-center justify-center text-red-600 mx-auto border-2 border-red-100 shadow-inner">
-                  <ShieldAlert size={48} />
+              <div className="bg-white p-16 rounded-[3.5rem] border border-red-50 text-center space-y-8 shadow-2xl shadow-red-100/50">
+                <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto shadow-inner border border-red-100">
+                  <ShieldAlert size={32} />
                 </div>
-                <div className="space-y-3">
-                  <h3 className="text-4xl font-black text-slate-900 tracking-tighter">
-                    Emergency Termination
-                  </h3>
-                  <p className="text-slate-500 font-bold max-w-md mx-auto">
-                    This action will permanently revoke your digital signature
-                    and wipe local session data.
-                  </p>
-                </div>
+                <h3 className="text-3xl font-black text-zinc-900 tracking-tighter uppercase">
+                  Root Termination
+                </h3>
+                <p className="text-zinc-500 text-sm font-bold max-w-xs mx-auto leading-relaxed">
+                  Danger: This will permanently wipe your digital identity and
+                  session keys from the grid node.
+                </p>
                 <button
-                  onClick={handleDeleteAccount}
-                  className="bg-red-600 text-white px-12 py-5 rounded-[2rem] font-black text-xs hover:bg-slate-900 transition-all shadow-xl shadow-red-200"
+                  onClick={confirmTerminate}
+                  className="bg-red-500 text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-900 transition-all shadow-xl shadow-red-100"
                 >
-                  CONFIRM ROOT WIPEOUT
+                  Initialize Wipeout
                 </button>
               </div>
             )}
 
             {activeSubTab !== "delete" && (
-              <div className="mt-20 pt-10 border-t border-slate-100 flex justify-end">
+              <div className="mt-24 pt-10 border-t border-zinc-100 flex justify-end">
                 <button
                   onClick={handleFinalSave}
                   disabled={saving}
-                  className="group bg-slate-900 text-white px-14 py-6 rounded-[2.5rem] font-black text-xs flex items-center gap-4 shadow-2xl hover:bg-primary transition-all active:scale-95 disabled:opacity-50"
+                  className="bg-zinc-900 text-white px-14 py-6 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.25em] flex items-center gap-3 shadow-2xl hover:bg-primary transition-all active:scale-95 disabled:opacity-50"
                 >
                   {saving ? (
-                    <Loader2 className="animate-spin" size={18} />
+                    <Loader2 className="animate-spin" size={16} />
                   ) : (
-                    <Save
-                      size={18}
-                      className="group-hover:scale-110 transition-transform"
-                    />
-                  )}
-                  {saving ? "SYNCHRONIZING..." : "SAVE CHANGES"}
+                    <Save size={16} />
+                  )}{" "}
+                  {saving ? "Synchronizing..." : "Commit Changes"}
                 </button>
               </div>
             )}
           </div>
         </main>
-
-        {/* --- RIGHT STATUS PANEL --- */}
-        <aside className="w-96 border-l border-slate-200 p-10 flex flex-col items-center justify-center bg-white space-y-12">
-          <div className="relative">
-            <svg className="w-48 h-48 -rotate-90">
-              <circle
-                cx="96"
-                cy="96"
-                r="88"
-                stroke="currentColor"
-                strokeWidth="16"
-                fill="transparent"
-                className="text-slate-50"
-              />
-              <circle
-                cx="96"
-                cy="96"
-                r="88"
-                stroke="currentColor"
-                strokeWidth="16"
-                fill="transparent"
-                strokeDasharray="552.92"
-                strokeDashoffset={552.92 * (1 - 0.85)}
-                className="text-primary transition-all duration-1000"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-5xl font-black text-slate-900 tracking-tighter">
-                85%
-              </span>
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                Reliability
-              </span>
-            </div>
-          </div>
-
-          <div className="w-full space-y-4">
-            <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 flex items-center gap-4 hover:border-emerald-200 transition-colors">
-              <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 font-black text-xs">
-                A1
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">
-                  Infrastructure Role
-                </p>
-                <p className="text-sm font-black text-slate-900">
-                  System Architect
-                </p>
-              </div>
-            </div>
-            <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 flex items-center gap-4">
-              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white">
-                <ShieldCheck size={18} />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">
-                  Security Level
-                </p>
-                <p className="text-sm font-black text-slate-900">
-                  Encrypted Root
-                </p>
-              </div>
-            </div>
-          </div>
-        </aside>
       </div>
 
       {/* --- GST MODAL --- */}
       {showGSTPopup && (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-slate-900/40 backdrop-blur-xl animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-md rounded-[4rem] p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.3)] space-y-10 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-8">
-              <X
-                className="cursor-pointer text-slate-300 hover:text-slate-900"
-                onClick={() => setShowGSTPopup(false)}
-              />
-            </div>
-            <div className="space-y-2">
-              <h4 className="text-3xl font-black text-slate-900 tracking-tighter">
-                Tax Grid Update
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-8 bg-zinc-900/40 backdrop-blur-xl animate-in fade-in">
+          <div className="bg-white w-full max-w-sm rounded-[3rem] p-12 shadow-2xl space-y-10 relative border border-zinc-100">
+            <button
+              className="absolute top-10 right-10 text-zinc-300 hover:text-zinc-900 transition-colors"
+              onClick={() => setShowGSTPopup(false)}
+            >
+              <X size={20} />
+            </button>
+            <div className="space-y-1 text-center">
+              <h4 className="text-2xl font-black text-zinc-900 tracking-tighter uppercase italic">
+                Taxation Grid
               </h4>
-              <p className="text-sm font-bold text-slate-400">
-                Modify global GST parameters.
+              <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">
+                Global GST Configuration
               </p>
             </div>
-            <div className="flex items-center gap-6 bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100">
+            <div className="flex items-center gap-4 bg-zinc-100 p-10 rounded-[2.5rem] border border-zinc-200 shadow-inner">
               <input
                 type="number"
                 value={gstValue}
                 onChange={(e) => setGstValue(e.target.value)}
                 className="text-7xl font-black w-full bg-transparent text-primary outline-none tracking-tighter"
               />
-              <span className="text-4xl font-black text-slate-200">%</span>
+              <span className="text-4xl font-black text-zinc-300">%</span>
             </div>
             <button
               onClick={handleGSTUpdate}
-              className="w-full bg-slate-900 text-white py-6 rounded-[2.5rem] font-black text-xs hover:bg-primary transition-all shadow-2xl shadow-slate-200"
+              className="w-full bg-zinc-900 text-white py-6 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-primary transition-all shadow-xl"
             >
-              CONFIRM GRID UPDATES
+              Push Update
             </button>
           </div>
         </div>
@@ -485,47 +449,55 @@ export default function ProfileModule({ onExit }) {
   );
 }
 
-// Sub-components
+// 🎨 Minimalist Navigation Button
 function SubTabBtn({ active, onClick, icon, label, danger }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center justify-between group px-6 py-5 rounded-3xl text-sm font-black transition-all ${
-        active
-          ? "bg-slate-900 text-white shadow-2xl shadow-slate-200 scale-[1.02]"
-          : danger
-            ? "text-red-500 hover:bg-red-50"
-            : "text-slate-400 hover:bg-slate-50 hover:text-slate-900"
-      }`}
+      className={`w-full flex items-center justify-between px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${active ? "bg-zinc-900 text-white shadow-xl shadow-zinc-200" : danger ? "text-red-500 hover:bg-red-50" : "text-zinc-400 hover:bg-zinc-50 hover:text-zinc-900"}`}
     >
       <div className="flex items-center gap-4">
-        {icon}
-        <span className="tracking-tight uppercase text-[11px] font-black">
-          {label}
-        </span>
+        {icon} <span>{label}</span>
       </div>
-      {active && <ChevronRight size={14} className="text-emerald-400" />}
+      {active && <ChevronRight size={12} className="text-primary" />}
     </button>
   );
 }
 
-function InputField({ label, value, onChange, placeholder, type = "text" }) {
+// 🎨 Smart InputField with Toggle Support
+function InputField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  allowToggle = false,
+}) {
+  const [show, setShow] = useState(false);
+  const inputType = allowToggle ? (show ? "text" : "password") : type;
+
   return (
-    <div className="space-y-4">
-      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-2">
+    <div className="space-y-3">
+      <label className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-400 ml-1">
         {label}
       </label>
       <div className="relative group">
         <input
-          type={type}
+          type={inputType}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full px-8 py-6 bg-white border-2 border-slate-100 rounded-[2.5rem] outline-none focus:border-primary/30 focus:ring-8 focus:ring-primary/5 font-black text-slate-900 transition-all placeholder:text-slate-200"
+          className="w-full px-6 py-5 bg-zinc-100 border border-zinc-200 rounded-[1.5rem] outline-none focus:bg-white focus:border-primary/40 focus:ring-4 focus:ring-primary/5 font-bold text-zinc-900 transition-all text-sm shadow-sm"
         />
-        <div className="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-focus-within:opacity-100 transition-opacity">
-          <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-        </div>
+        {allowToggle && (
+          <button
+            type="button"
+            onClick={() => setShow(!show)}
+            className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-300 hover:text-primary transition-colors p-1"
+          >
+            {show ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        )}
       </div>
     </div>
   );

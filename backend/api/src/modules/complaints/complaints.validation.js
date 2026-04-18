@@ -1,11 +1,26 @@
+// backend/api/src/modules/complaints/complaints.validation.js
+
 exports.validateComplaint = (data) => {
   const errors = [];
-  if (!data.name) errors.push("Kisan ka naam zaroori hai");
-  if (!data.phone || data.phone.length < 10) errors.push("Sahi phone number dalein");
-  if (!data.issue_type) errors.push("Issue type (Leakage/Pressure etc) select karein");
-  
+
+  if (!data.name || data.name.trim().length === 0) {
+    errors.push("Customer name is required.");
+  }
+
+  if (!data.phone || data.phone.length < 10) {
+    errors.push("Please enter a valid 10-digit phone number.");
+  }
+
+  if (!data.issue_type) {
+    errors.push("Please select an issue category.");
+  }
+
+  if (!data.village) {
+    errors.push("Village name is required for field support.");
+  }
+
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 };

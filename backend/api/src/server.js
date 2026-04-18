@@ -70,6 +70,7 @@ app.use("/v1/complaints", require("./modules/complaints/complaints.routes"));
 app.use("/v1/maintenance", require("./modules/maintenance/maintenance.routes"));
 app.use("/v1/reports", require("./modules/reports/reports.routes"));
 app.use("/v1/profile", require("./modules/profile/profile.routes"));
+app.use("/v1/workers", require("./modules/workers/workers.routes"));
 
 // --- 5. ERROR HANDLING ---
 app.use(notFoundHandler);

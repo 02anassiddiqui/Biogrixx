@@ -1,5 +1,7 @@
+// frontend/pages/gas-usage.js
 import { useState, useEffect } from "react";
-import { apiRequest } from "../services/api"; // ✅ Centralized API Handler
+import { apiRequest } from "../services/api";
+import toast from "react-hot-toast";
 import {
   History,
   Search,
@@ -10,15 +12,26 @@ import {
   Calendar,
   Zap,
   TrendingUp,
+  User,
+  Image as ImageIcon,
+  X,
+  ExternalLink,
+  RefreshCw,
 } from "lucide-react";
 
-export default function UsageHistoryModule() {
+// 🚀 Step 1: Reusable Skeleton Component
+const Skeleton = ({ className }) => (
+  <div className={`animate-pulse bg-zinc-200/60 rounded-xl ${className}`} />
+);
+
+export default function UsageHistoryModule({ syncTrigger }) {
+  // 🚀 Step 2: Receive syncTrigger
   const [readings, setReadings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedVillage, setSelectedVillage] = useState("All");
+  const [previewImage, setPreviewImage] = useState(null);
 
-  // --- 📡 1. FETCH DATA ---
   const fetchHistory = async () => {
     setLoading(true);
     try {
@@ -26,22 +39,21 @@ export default function UsageHistoryModule() {
       if (res.success) {
         setReadings(res.data);
       } else {
-        console.error("Backend error:", res.message);
+        toast.error(res.message || "Failed to sync usage history.");
       }
     } catch (err) {
-      console.error("History fetch failed:", err);
+      toast.error("Network error: Unable to connect to Biogrix Grid.");
     } finally {
-      setLoading(false);
+      // 🚀 Step 3: Smooth transition delay for skeletons
+      setTimeout(() => setLoading(false), 500);
     }
   };
 
+  // 🚀 Step 4: Hook into universal Sync Grid from Dashboard
   useEffect(() => {
     fetchHistory();
-  }, []);
+  }, [syncTrigger]);
 
-  // --- 🔍 2. FILTERING LOGIC ---
-
-  // Unique Villages for Filter Dropdown
   const villages = [
     "All",
     ...new Set(
@@ -53,12 +65,14 @@ export default function UsageHistoryModule() {
     const customerName = r.customers?.name?.toLowerCase() || "";
     const meterSerial = r.meters?.serial_number?.toLowerCase() || "";
     const villageName = r.customers?.villages?.name?.toLowerCase() || "";
+    const agentName = r.workers?.name?.toLowerCase() || "";
     const search = searchTerm.toLowerCase();
 
     const matchesSearch =
       customerName.includes(search) ||
       meterSerial.includes(search) ||
-      villageName.includes(search);
+      villageName.includes(search) ||
+      agentName.includes(search);
 
     const matchesVillage =
       selectedVillage === "All" ||
@@ -67,7 +81,6 @@ export default function UsageHistoryModule() {
     return matchesSearch && matchesVillage;
   });
 
-  // --- 📊 3. STATS CALCULATION ---
   const totalConsumption = filteredReadings.reduce(
     (acc, curr) => acc + (curr.consumption || 0),
     0,
@@ -75,30 +88,47 @@ export default function UsageHistoryModule() {
 
   return (
     <div className="py-8 animate-in fade-in duration-500">
-      {/* 📊 SUMMARY STATS SECTION */}
+      {/* 📊 SUMMARY STATS WITH SKELETON */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-8 mb-10">
-        <StatCard
-          icon={<History size={24} />}
-          label="Total Readings"
-          value={filteredReadings.length}
-          theme="white"
-        />
-        <StatCard
-          icon={<TrendingUp size={24} />}
-          label="Total Gas Consumed"
-          value={`${totalConsumption.toFixed(2)} m³`}
-          theme="dark"
-        />
-        <StatCard
-          icon={<Zap size={24} />}
-          label="Estimated Revenue (₹)"
-          value={(totalConsumption * 45).toLocaleString("en-IN")}
-          theme="white"
-          accent="emerald"
-        />
+        {loading ? (
+          [1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="p-10 rounded-[2.5rem] border border-neutral-100 bg-white shadow-sm h-52 flex flex-col justify-between"
+            >
+              <Skeleton className="w-14 h-14 rounded-2xl" />
+              <div className="space-y-3">
+                <Skeleton className="h-10 w-32" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+            </div>
+          ))
+        ) : (
+          <>
+            <StatCard
+              icon={<History size={24} />}
+              label="Total Logs Recorded"
+              value={filteredReadings.length}
+              theme="white"
+            />
+            <StatCard
+              icon={<TrendingUp size={24} />}
+              label="Cumulative Consumption"
+              value={`${totalConsumption.toFixed(2)} m³`}
+              theme="dark"
+            />
+            <StatCard
+              icon={<Zap size={24} />}
+              label="Revenue Projection (₹)"
+              value={(totalConsumption * 45).toLocaleString("en-IN")}
+              theme="white"
+              accent="emerald"
+            />
+          </>
+        )}
       </div>
 
-      {/* 🔍 FILTERS & SEARCH BAR */}
+      {/* 🔍 FILTERS & SEARCH */}
       <div className="px-8 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="flex flex-1 gap-4 w-full md:w-auto">
           <div className="relative flex-1 max-w-sm">
@@ -108,20 +138,19 @@ export default function UsageHistoryModule() {
             />
             <input
               type="text"
-              placeholder="Search Kisan, Meter or Village..."
-              className="w-full pl-12 pr-6 py-4 bg-white border border-neutral-100 rounded-2xl outline-none focus:ring-2 focus:ring-primary/10 font-medium text-sm"
+              placeholder="Search Customer, Agent or Meter ID..."
+              className="w-full pl-12 pr-6 py-4 bg-white border border-neutral-100 rounded-2xl outline-none focus:ring-4 focus:ring-primary/5 font-bold text-xs shadow-sm transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-
           <div className="relative w-48">
             <Filter
               className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300"
               size={16}
             />
             <select
-              className="w-full pl-11 pr-4 py-4 bg-white border border-neutral-100 rounded-2xl outline-none font-bold text-sm appearance-none cursor-pointer"
+              className="w-full pl-11 pr-4 py-4 bg-white border border-neutral-100 rounded-2xl outline-none font-black text-[10px] uppercase tracking-widest appearance-none cursor-pointer"
               value={selectedVillage}
               onChange={(e) => setSelectedVillage(e.target.value)}
             >
@@ -133,87 +162,114 @@ export default function UsageHistoryModule() {
             </select>
           </div>
         </div>
-
-        <button className="bg-neutral-50 text-neutral-400 px-6 py-4 rounded-2xl font-bold text-sm flex items-center gap-2 hover:bg-neutral-100 transition-all border border-neutral-100">
-          <Download size={18} /> Export CSV
+        <button
+          onClick={() => toast.success("Exporting data to CSV...")}
+          className="bg-neutral-50 text-neutral-400 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:bg-neutral-100 transition-all border border-neutral-100 active:scale-95"
+        >
+          <Download size={18} /> Export Data
         </button>
       </div>
 
-      {/* 📑 READINGS TABLE SECTION */}
+      {/* 📑 READINGS TABLE WITH SKELETON */}
       <div className="px-8">
         <div className="bg-white rounded-[2.5rem] border border-neutral-100 overflow-hidden shadow-sm">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse font-bold">
             <thead>
-              <tr className="bg-neutral-50/50 text-neutral-400 text-[10px] font-black uppercase tracking-widest border-b border-neutral-50">
-                <th className="px-8 py-6">Date & Time</th>
+              <tr className="bg-neutral-50/50 text-neutral-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-neutral-100">
+                <th className="px-8 py-6">Timestamp</th>
                 <th className="px-8 py-6">Customer & Village</th>
-                <th className="px-8 py-6">Meter ID</th>
-                <th className="px-8 py-6">Readings (Prev → Curr)</th>
-                <th className="px-8 py-6 text-right">Consumption</th>
+                <th className="px-8 py-6">Field Agent</th>
+                <th className="px-8 py-6">Evidence</th>
+                <th className="px-8 py-6">Volume</th>
+                <th className="px-8 py-6 text-right">Route</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-50">
               {loading ? (
-                <tr>
-                  <td colSpan="5" className="py-20 text-center">
-                    <Loader2 className="animate-spin mx-auto text-primary" />
-                    <p className="text-xs font-bold text-neutral-400 mt-2 uppercase tracking-widest">
-                      Loading Records...
-                    </p>
-                  </td>
-                </tr>
+                // 🚀 Skeleton Table Rows
+                [1, 2, 3, 4, 5].map((i) => (
+                  <tr key={i}>
+                    <td className="px-8 py-6">
+                      <Skeleton className="h-4 w-24" />
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-16" />
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <Skeleton className="h-7 w-24 rounded-xl" />
+                    </td>
+                    <td className="px-8 py-6">
+                      <Skeleton className="h-8 w-24 rounded-xl" />
+                    </td>
+                    <td className="px-8 py-6">
+                      <Skeleton className="h-8 w-20 rounded-xl" />
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <Skeleton className="h-6 w-6 ml-auto" />
+                    </td>
+                  </tr>
+                ))
               ) : filteredReadings.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="5"
-                    className="py-20 text-center text-neutral-400 font-bold uppercase text-[10px] tracking-widest"
+                    colSpan="6"
+                    className="py-20 text-center text-neutral-300 font-black uppercase text-[10px] tracking-widest"
                   >
-                    No history records found.
+                    No matching records found.
                   </td>
                 </tr>
               ) : (
                 filteredReadings.map((row) => (
                   <tr
                     key={row.id}
-                    className="group hover:bg-neutral-50/50 transition-all"
+                    className="group hover:bg-neutral-50/40 transition-all font-bold"
                   >
+                    <td className="px-8 py-6 text-[11px] font-black text-neutral-500 uppercase">
+                      {new Date(row.recorded_at).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
                     <td className="px-8 py-6">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-neutral-50 rounded-lg text-neutral-400">
-                          <Calendar size={14} />
-                        </div>
-                        <span className="text-xs font-bold text-neutral-600">
-                          {new Date(row.recorded_at).toLocaleDateString(
-                            "en-GB",
-                            { day: "2-digit", month: "short", year: "numeric" },
-                          )}
+                      <div className="font-black text-neutral-900 text-sm tracking-tight">
+                        {row.customers?.name}
+                      </div>
+                      <div className="text-[9px] text-neutral-400 font-black uppercase tracking-widest">
+                        {row.customers?.villages?.name || "System Node"}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50/50 px-3 py-1.5 rounded-xl w-fit">
+                        <User size={12} /> {row.workers?.name || "Admin"}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      {row.image_url ? (
+                        <button
+                          onClick={() => setPreviewImage(row.image_url)}
+                          className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-primary bg-primary/5 px-4 py-2 rounded-xl hover:bg-primary hover:text-white transition-all active:scale-95 shadow-sm"
+                        >
+                          <ImageIcon size={14} /> View Proof
+                        </button>
+                      ) : (
+                        <span className="text-neutral-200 text-[9px] font-black uppercase italic tracking-widest">
+                          No Data
                         </span>
-                      </div>
+                      )}
                     </td>
                     <td className="px-8 py-6">
-                      <div className="font-black text-neutral-900">
-                        {row.customers?.name || "Unknown Customer"}
-                      </div>
-                      <div className="flex items-center gap-1 text-[10px] text-neutral-400 font-bold uppercase tracking-tighter mt-0.5">
-                        <MapPin size={10} className="text-primary" />
-                        {/* ✅ Village Check Logic */}
-                        {row.customers?.villages?.name || "Village Not Linked"}
-                      </div>
-                    </td>
-                    <td className="px-8 py-6 font-black text-neutral-400 text-xs tracking-widest">
-                      {row.meters?.serial_number || "N/A"}
-                    </td>
-                    <td className="px-8 py-6 text-sm font-bold text-neutral-500">
-                      {row.previous_reading}{" "}
-                      <span className="mx-2 text-neutral-200">→</span>{" "}
-                      <span className="text-neutral-900">
-                        {row.current_reading}
+                      <span className="bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl font-black text-xs border border-emerald-100/50">
+                        +{row.consumption} m³
                       </span>
                     </td>
                     <td className="px-8 py-6 text-right">
-                      <span className="bg-primary/5 text-primary px-4 py-2 rounded-xl font-black text-sm">
-                        +{row.consumption} m³
-                      </span>
+                      <button className="text-neutral-200 hover:text-primary transition-colors active:scale-90">
+                        <MapPin size={16} />
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -222,40 +278,67 @@ export default function UsageHistoryModule() {
           </table>
         </div>
       </div>
+
+      {/* 🚀 IMAGE PREVIEW MODAL (Kept Original) */}
+      {previewImage && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-neutral-900/90 backdrop-blur-xl animate-in fade-in duration-300">
+          <div className="relative max-w-4xl w-full bg-white rounded-[3.5rem] overflow-hidden shadow-2xl animate-in zoom-in duration-300 border border-white/10">
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute top-8 right-8 p-4 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-md z-10 transition-all active:scale-90"
+            >
+              <X size={24} />
+            </button>
+            <div className="bg-neutral-950 flex items-center justify-center min-h-[450px]">
+              <img
+                src={previewImage}
+                alt="Evidence"
+                className="w-full h-auto max-h-[70vh] object-contain"
+              />
+            </div>
+            <div className="p-10 flex justify-between items-center bg-white">
+              <div>
+                <h3 className="text-2xl font-black text-neutral-900 uppercase tracking-tighter italic">
+                  Verification Node
+                </h3>
+                <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.3em] mt-2">
+                  Metadata: Cryptographic Evidence Log
+                </p>
+              </div>
+              <a
+                href={previewImage}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-3 bg-neutral-900 text-white px-10 py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.2em] hover:bg-primary hover:shadow-xl transition-all active:scale-95"
+              >
+                <ExternalLink size={16} /> Raw View
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-// 🎨 STAT CARD HELPER COMPONENT (To Keep Design Premium)
 function StatCard({ icon, label, value, theme, accent }) {
   const isDark = theme === "dark";
   const isEmerald = accent === "emerald";
-
   return (
     <div
-      className={`p-8 rounded-[2.5rem] border shadow-sm transition-all ${
-        isDark
-          ? "bg-neutral-900 border-neutral-800 text-white shadow-xl"
-          : "bg-white border-neutral-100 text-neutral-900"
-      }`}
+      className={`p-10 rounded-[2.5rem] border shadow-sm transition-all hover:shadow-md ${isDark ? "bg-neutral-900 border-neutral-800 text-white shadow-xl" : "bg-white border-neutral-100 text-neutral-900"}`}
     >
       <div
-        className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${
-          isDark
-            ? "bg-primary text-white"
-            : isEmerald
-              ? "bg-emerald-50 text-emerald-600"
-              : "bg-primary/10 text-primary"
-        }`}
+        className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-sm ${isDark ? "bg-primary text-white" : isEmerald ? "bg-emerald-50 text-emerald-600" : "bg-primary/10 text-primary"}`}
       >
         {icon}
       </div>
       <div
-        className={`text-3xl font-black ${isDark ? "text-primary" : "text-neutral-900"}`}
+        className={`text-4xl font-black tracking-tighter ${isDark ? "text-primary" : "text-neutral-900"}`}
       >
         {value}
       </div>
-      <div className="text-[10px] font-bold text-neutral-400 uppercase mt-1 tracking-widest">
+      <div className="text-[10px] font-black text-neutral-400 uppercase mt-2 tracking-[0.2em]">
         {label}
       </div>
     </div>

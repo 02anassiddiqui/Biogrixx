@@ -4,6 +4,17 @@
   "private": true,
   "main": "worker.js",
   "scripts": {
-    "start": "node worker.js"
+    "start": "node worker.js",
+    "dev": "node --watch worker.js"
+  },
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.103.1",
+    "dotenv": "^17.4.2",
+    "node-cron": "^4.2.1"
   }
 }
