@@ -1,7 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
 
-// Ab humein yahan dotenv ki zaroorat nahi hai, 
-// kyunki server.js ise pehle hi load kar chuka hoga.
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
